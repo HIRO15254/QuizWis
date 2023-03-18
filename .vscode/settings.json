@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "callbackurl",
+        "Codegen",
+        "datetime",
+        "linebreak",
+        "mantine",
+        "mypage",
+        "NEXTAUTH",
+        "quizwis",
+        "signup",
+        "tiptap",
+        "typegen"
+    ],
+    "files.eol": "\n",
+    "eslint.alwaysShowStatus": true,
+    "eslint.codeActionsOnSave.rules": null,
+    "eslint.format.enable": true,
+    "eslint.packageManager": "yarn"
+}
