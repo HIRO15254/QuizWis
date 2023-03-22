@@ -25,11 +25,16 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, token: _token, user }) {
       const userValue = await prisma.user.findUnique({ where: { id: user.id } });
-      // ここでのパラメーター再割り当ては許容してほしい
+      const userDataValue = await prisma.userData.findUnique(
+        { where: { databaseId: userValue?.userDataId || '' } },
+      );
+      // NOTE: ここでのパラメーター再割り当ては許容してほしい
       // eslint-disable-next-line no-param-reassign
       session.user.userDataLinked = !!userValue?.userDataId;
       // eslint-disable-next-line no-param-reassign
       session.user.id = userValue?.id || '';
+      // eslint-disable-next-line no-param-reassign
+      session.userData = { userId: userDataValue?.userId || '' };
       return session;
     },
   },

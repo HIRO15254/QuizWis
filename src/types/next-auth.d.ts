@@ -6,5 +6,8 @@ declare module 'next-auth' {
       userDataLinked: boolean;
       id: string;
     } & DefaultSession['user'];
+    userData: {
+      userId: string;
+    }
   }
 }

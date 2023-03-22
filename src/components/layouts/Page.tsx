@@ -4,6 +4,7 @@ import {
 import React, { ReactNode } from 'react';
 
 import CustomHeader from './CustomHeader';
+import CustomNavbar from './CustomNavbar';
 import useAccessControl, { AccessControlType } from '../../hooks/useAccessControl';
 import useLoginHandle from '../../hooks/useLoginHandle';
 
@@ -22,7 +23,7 @@ const Page = (props: PageProps) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {access && (
-      <AppShell header={<CustomHeader />} padding="md" fixed={false}>
+      <AppShell header={<CustomHeader />} navbar={<CustomNavbar />} padding="md" fixed={false}>
         <Container>
           {children}
         </Container>
