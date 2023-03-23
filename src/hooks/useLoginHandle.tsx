@@ -23,8 +23,8 @@ const useLoginHandle = () => {
             variables: {
               input: {
                 userId: createUserID(),
-                name: session?.user.name || '',
-                authUserId: session?.user.id || '',
+                name: session?.user.name ?? '',
+                authUserId: session?.user.id ?? '',
               },
             },
           });
