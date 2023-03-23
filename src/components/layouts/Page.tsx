@@ -11,19 +11,28 @@ import useLoginHandle from '../../hooks/useLoginHandle';
 type PageProps = {
   children: ReactNode;
   accessControl: AccessControlType
+  header: boolean
+  navbar: boolean
 };
 
 /**
  * 見た目的なページのベース
  */
 const Page = (props: PageProps) => {
-  const { children, accessControl } = props;
+  const {
+    children, accessControl, header, navbar,
+  } = props;
   const [access, message] = useAccessControl(accessControl);
   useLoginHandle();
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {access && (
-      <AppShell header={<CustomHeader />} navbar={<CustomNavbar />} padding="md" fixed={false}>
+      <AppShell
+        header={header ? <CustomHeader /> : undefined}
+        navbar={navbar ? <CustomNavbar /> : undefined}
+        padding="md"
+        fixed={false}
+      >
         <Container>
           {children}
         </Container>

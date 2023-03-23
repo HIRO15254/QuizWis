@@ -51,7 +51,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface LinksGroupProps {
-  icon: React.FC<any>;
+  icon: React.FC<{ size: string }>;
   label: string;
   initiallyOpened?: boolean;
   links?: { label: string; link: string }[];
@@ -92,7 +92,7 @@ const LinksGroup = ({
               size="1rem"
               stroke={1.5}
               style={{
-                transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none',
+                transform: opened ? 'rotate(90deg)' : 'none',
               }}
             />
           )}

@@ -5,8 +5,10 @@ import {
   Avatar,
   Text,
   createStyles,
+  Menu,
 } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 
 const useStyles = createStyles((theme) => ({
@@ -26,32 +28,45 @@ interface UserButtonProps extends UnstyledButtonProps {
   image: string;
   name: string;
   userId: string;
-  icon?: React.ReactNode;
 }
 
+const logout = () => {
+  signOut({ callbackUrl: '/auth/login' });
+};
+
 const UserButton = ({
-  image, name, userId, icon, ...others
+  image, name, userId, ...others
 }: UserButtonProps) => {
   const { classes } = useStyles();
 
   return (
-    <UnstyledButton className={classes.user} {...others}>
-      <Group>
-        <Avatar src={image} radius="xl" />
+    <Menu position="right-end" width={200}>
+      <Menu.Target>
+        <UnstyledButton className={classes.user} {...others}>
+          <Group>
+            <Avatar src={image} radius="xl" />
 
-        <div style={{ flex: 1 }}>
-          <Text size="sm" weight={500}>
-            {name}
-          </Text>
+            <div style={{ flex: 1 }}>
+              <Text size="sm" weight={500}>
+                {name}
+              </Text>
 
-          <Text color="dimmed" size="xs">
-            {`@${userId}`}
-          </Text>
-        </div>
+              <Text color="dimmed" size="xs">
+                {`@${userId}`}
+              </Text>
+            </div>
 
-        {icon || <IconChevronRight size="0.9rem" stroke={1.5} />}
-      </Group>
-    </UnstyledButton>
+            <IconChevronRight size="0.9rem" stroke={1.5} />
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item onClick={() => {}}>Profile</Menu.Item>
+        <Menu.Item onClick={() => {}}>Settings</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item onClick={logout} color="red">Logout</Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 

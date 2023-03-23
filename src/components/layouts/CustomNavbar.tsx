@@ -2,13 +2,8 @@ import {
   Navbar, ScrollArea, createStyles, rem,
 } from '@mantine/core';
 import {
-  IconNotes,
-  IconCalendarStats,
-  IconGauge,
-  IconPresentationAnalytics,
-  IconFileAnalytics,
-  IconAdjustments,
-  IconLock,
+  IconHexagonLetterQ,
+  IconLayoutKanban,
 } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import React from 'react';
@@ -16,46 +11,27 @@ import React from 'react';
 import LinksGroup from './LinksGroup';
 import UserButton from './UserButton';
 
+// サイドバーに表示するデータ
 const mockData = [
-  { label: 'Dashboard', icon: IconGauge },
   {
-    label: 'Market news',
-    icon: IconNotes,
+    label: '作問',
+    icon: IconHexagonLetterQ,
     initiallyOpened: true,
     links: [
-      { label: 'Overview', link: '/' },
-      { label: 'Forecasts', link: '/' },
-      { label: 'Outlook', link: '/' },
-      { label: 'Real time', link: '/' },
+      { label: '問題セット', link: '/' },
+      { label: 'ジャンル', link: '/' },
     ],
   },
-  {
-    label: 'Releases',
-    icon: IconCalendarStats,
-    links: [
-      { label: 'Upcoming releases', link: '/' },
-      { label: 'Previous releases', link: '/' },
-      { label: 'Releases schedule', link: '/' },
-    ],
-  },
-  { label: 'Analytics', icon: IconPresentationAnalytics },
-  { label: 'Contracts', icon: IconFileAnalytics },
-  { label: 'Settings', icon: IconAdjustments },
-  {
-    label: 'Security',
-    icon: IconLock,
-    links: [
-      { label: 'Enable 2FA', link: '/' },
-      { label: 'Change password', link: '/' },
-      { label: 'Recovery codes', link: '/' },
-    ],
-  },
+  { label: '得点表示', icon: IconLayoutKanban, link: '/' },
 ];
 
 const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
     paddingBottom: 0,
+    paddingTop: theme.spacing.sm,
+    paddingRight: theme.spacing.md,
+    paddingLeft: theme.spacing.md,
   },
 
   links: {
@@ -79,7 +55,7 @@ const CustomNavbar = () => {
   const links = mockData.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
-    <Navbar width={{ sm: 300 }} px="md" py="sm" className={classes.navbar}>
+    <Navbar width={{ sm: 300 }} className={classes.navbar}>
       <Navbar.Section grow className={classes.links} component={ScrollArea}>
         <div>{links}</div>
       </Navbar.Section>

@@ -41,7 +41,11 @@ const MyApp: React.FC<AppProps> = ({
         <title>{pageProps.title}</title>
       </Head>
       <SessionProvider session={session}>
-        <Page accessControl={pageProps.accessControl}>
+        <Page
+          accessControl={pageProps.accessControl}
+          navbar={pageProps.navbar ?? true}
+          header={pageProps.header ?? true}
+        >
           <Component {...pageProps} />
         </Page>
       </SessionProvider>

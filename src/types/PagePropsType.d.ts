@@ -6,6 +6,8 @@ declare module 'next' {
   export type PageProps = {
     title: string
     accessControl: AccessControlType
+    header?: boolean
+    navbar?: boolean
   };
   // TODO: 型チェック通す
   // eslint-disable-next-line @typescript-eslint/ban-types

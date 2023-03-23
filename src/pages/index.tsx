@@ -13,6 +13,7 @@ const Home: PageFC = () => (
 Home.getInitialProps = async () => ({
   title: 'QuizWis',
   accessControl: 'public',
+  navbar: false,
 });
 
 export default Home;
