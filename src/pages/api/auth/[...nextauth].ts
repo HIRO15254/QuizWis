@@ -38,6 +38,7 @@ export const authOptions: AuthOptions = {
         userId: userDataValue?.userId ?? '',
         iconUrl: userDataValue?.iconUrl ?? undefined,
         name: userDataValue?.name ?? '',
+        isDarkTheme: userDataValue?.isDarkTheme ?? false,
       };
       return session;
     },

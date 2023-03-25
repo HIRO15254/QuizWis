@@ -11,6 +11,7 @@ export const updateUserDataInput = inputObjectType({
     t.string('email');
     t.string('bio');
     t.string('iconUrl');
+    t.boolean('isDarkTheme');
   },
 });
 
@@ -41,6 +42,7 @@ export const updateUserDataMutation = mutationField('updateUserData', {
         email: input.email ?? undefined,
         bio: input.bio ?? undefined,
         iconUrl: input.iconUrl ?? undefined,
+        isDarkTheme: input.isDarkTheme ?? undefined,
       },
     });
   },

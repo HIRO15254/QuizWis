@@ -72,17 +72,19 @@ model VerificationToken {
 /// ユーザーの情報（実際に取得・変更する用）
 model UserData {
   /// データベース上のID。基本使わない。
-  databaseId String  @id @default(cuid()) @map("id")
+  databaseId  String  @id @default(cuid()) @map("id")
   /// 各ユーザーが任意につけられるかつUniqueなID
-  userId     String  @unique
+  userId      String  @unique
   /// 各ユーザーの表示名
-  name       String
+  name        String
   /// 各ユーザーのプロフィールページの内容
-  bio        String?
+  bio         String?
   /// 各ユーザーemailアドレス
-  email      String? @unique
+  email       String? @unique
   /// ユーザーのアイコン画像のURL
-  iconUrl    String?
+  iconUrl     String?
+  /// ダークテーマ設定
+  isDarkTheme Boolean @default(false)
 
   /// Admin権限の有無
   /// クライアント側からの変更禁止
