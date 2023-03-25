@@ -15,22 +15,6 @@ export const nodeQuery = queryField('node', {
       const res = ctx.prisma.userData.findUnique({ where: { databaseId } });
       return res ? { ...res, __typename: 'UserData' } : null;
     }
-    if (type === 'Quiz') {
-      const res = ctx.prisma.quiz.findUnique({ where: { databaseId } });
-      return res ? { ...res, __typename: 'Quiz' } : null;
-    }
-    if (type === 'QuizGenre') {
-      const res = ctx.prisma.quizGenre.findUnique({ where: { databaseId } });
-      return res ? { ...res, __typename: 'QuizGenre' } : null;
-    }
-    if (type === 'QuizTag') {
-      const res = ctx.prisma.quizTag.findUnique({ where: { databaseId } });
-      return res ? { ...res, __typename: 'QuizTag' } : null;
-    }
-    if (type === 'QuizSet') {
-      const res = ctx.prisma.quizSet.findUnique({ where: { databaseId } });
-      return res ? { ...res, __typename: 'QuizSet' } : null;
-    }
     return null;
   },
 });

@@ -2,5 +2,9 @@ query getMe {
   me {
     userId
     name
+    bio
+    email
+    isAdmin
+    iconUrl
   }
 }

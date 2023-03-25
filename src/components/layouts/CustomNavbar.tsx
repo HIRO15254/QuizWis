@@ -48,7 +48,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-// TODO: ログインユーザーのアイコンを表示する
 const CustomNavbar = () => {
   const { classes } = useStyles();
   const { data: session } = useSession();
@@ -62,9 +61,9 @@ const CustomNavbar = () => {
 
       <Navbar.Section className={classes.footer}>
         <UserButton
-          name={session?.user?.name || 'Undefined User'}
-          userId={session?.userData?.userId || 'undefined'}
-          image="https://avatars.githubusercontent.com/u/994742?v=4"
+          name={session?.userData?.name ?? 'Undefined User'}
+          userId={session?.userData?.userId ?? 'undefined'}
+          image={session?.userData?.iconUrl}
         />
       </Navbar.Section>
     </Navbar>

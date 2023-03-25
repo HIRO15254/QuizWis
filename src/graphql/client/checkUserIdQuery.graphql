@@ -1,0 +1,5 @@
+query checkUserId($input: GetUserDataInput!) {
+  getUserData(input: $input) {
+    userId
+  }
+}

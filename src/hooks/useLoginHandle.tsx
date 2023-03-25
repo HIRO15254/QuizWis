@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useCreateUserDataMutation } from '../graphql/generated/type';
 
 const createUserID = () => {
-  const c = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const length = 8;
   return [...Array(length)].map(() => c[Math.floor(Math.random() * c.length)]).join('');
 };

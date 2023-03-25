@@ -19,6 +19,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input GetUserDataInput {
+  userId: String!
+}
+
 type Mutation {
   createUserData(input: CreateUserDataInput!): UserData
   updateUserData(input: UpdateUserDataInput!): UserData
@@ -29,13 +33,17 @@ interface Node {
 }
 
 type Query {
+  getUserData(input: GetUserDataInput!): UserData
   me: UserData
   node(id: String!): Node
 }
 
 input UpdateUserDataInput {
   bio: String
-  name: String!
+  email: String
+  iconUrl: String
+  name: String
+  newUserId: String
   userId: String!
 }
 
@@ -49,6 +57,9 @@ type UserData implements Node {
 
   """各ユーザーemailアドレス"""
   email: String
+
+  """ユーザーのアイコン画像のURL"""
+  iconUrl: String
   id: ID!
 
   """Admin権限の有無\nクライアント側からの変更禁止"""

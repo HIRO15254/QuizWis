@@ -81,6 +81,8 @@ model UserData {
   bio        String?
   /// 各ユーザーemailアドレス
   email      String? @unique
+  /// ユーザーのアイコン画像のURL
+  iconUrl    String?
 
   /// Admin権限の有無
   /// クライアント側からの変更禁止
