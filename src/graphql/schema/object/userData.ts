@@ -13,6 +13,7 @@ export const userDataObject = objectType({
     t.field(UserData.bio);
     t.field(UserData.isAdmin);
     t.field(UserData.iconUrl);
+    t.field(UserData.isDarkTheme);
     t.nonNull.id('id', {
       resolve: (parent, _args, _ctx) => Buffer.from(`UserData:${parent.databaseId}`).toString('base64'),
     });

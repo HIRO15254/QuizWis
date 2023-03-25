@@ -1,12 +1,12 @@
 import 'src/styles/globals.css';
 import { ApolloProvider } from '@apollo/client';
-import { Global, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Head from 'next/head';
 import { SessionProvider } from 'next-auth/react';
 import React from 'react';
 
-import Page from '../components/layouts/Page';
+import StyleProvider from './_style';
+import Page from '../features/layouts/components/Page';
 import apolloClient from '../lib/apollo';
 
 import type { AppProps } from 'next/app';
@@ -20,27 +20,12 @@ const MyApp: React.FC<AppProps> = ({
   pageProps: { session, ...pageProps },
 }) => (
   <ApolloProvider client={apolloClient}>
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        /** Put your mantine theme override here */
-        colorScheme: 'light',
-      }}
-    >
-      <Global
-        styles={(theme) => ({
-          body: {
-            backgroundColor:
-              theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-          },
-        })}
-      />
-      <Notifications />
-      <Head>
-        <title>{pageProps.title}</title>
-      </Head>
-      <SessionProvider session={session}>
+    <SessionProvider session={session}>
+      <StyleProvider>
+        <Notifications />
+        <Head>
+          <title>{pageProps.title}</title>
+        </Head>
         <Page
           accessControl={pageProps.accessControl}
           navbar={pageProps.navbar ?? true}
@@ -48,8 +33,8 @@ const MyApp: React.FC<AppProps> = ({
         >
           <Component {...pageProps} />
         </Page>
-      </SessionProvider>
-    </MantineProvider>
+      </StyleProvider>
+    </SessionProvider>
   </ApolloProvider>
 );
 

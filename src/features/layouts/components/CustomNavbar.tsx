@@ -8,8 +8,8 @@ import {
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
-import LinksGroup from './LinksGroup';
-import UserButton from './UserButton';
+import LinksGroup from '../parts/LinksGroup';
+import UserButton from '../parts/UserButton';
 
 // サイドバーに表示するデータ
 const mockData = [

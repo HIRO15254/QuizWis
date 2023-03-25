@@ -12,6 +12,8 @@ import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
 import React from 'react';
 
+import DarkThemeItem from './DarkThemeItem';
+
 const useStyles = createStyles((theme) => ({
   user: {
     display: 'block',
@@ -65,6 +67,8 @@ const UserButton = ({
       <Menu.Dropdown>
         <Menu.Item onClick={() => {}}>Profile</Menu.Item>
         <Menu.Item onClick={() => { router.push('/user/settings'); }}>Settings</Menu.Item>
+        <Menu.Divider />
+        <DarkThemeItem />
         <Menu.Divider />
         <Menu.Item onClick={logout} color="red">Logout</Menu.Item>
       </Menu.Dropdown>

@@ -42,6 +42,7 @@ input UpdateUserDataInput {
   bio: String
   email: String
   iconUrl: String
+  isDarkTheme: Boolean
   name: String
   newUserId: String
   userId: String!
@@ -64,6 +65,9 @@ type UserData implements Node {
 
   """Admin権限の有無\nクライアント側からの変更禁止"""
   isAdmin: Boolean!
+
+  """ダークテーマ設定"""
+  isDarkTheme: Boolean!
 
   """各ユーザーの表示名"""
   name: String!

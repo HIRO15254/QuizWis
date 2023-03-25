@@ -5,8 +5,8 @@ import React, { ReactNode } from 'react';
 
 import CustomHeader from './CustomHeader';
 import CustomNavbar from './CustomNavbar';
-import useAccessControl, { AccessControlType } from '../../hooks/useAccessControl';
-import useLoginHandle from '../../hooks/useLoginHandle';
+import useAccessControl, { AccessControlType } from '../../../hooks/useAccessControl';
+import useLoginHandle from '../../../hooks/useLoginHandle';
 
 type PageProps = {
   children: ReactNode;
@@ -25,18 +25,19 @@ const Page = (props: PageProps) => {
   const [access, message] = useAccessControl(accessControl);
   useLoginHandle();
   return (
+
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {access && (
-      <AppShell
-        header={header ? <CustomHeader /> : undefined}
-        navbar={navbar ? <CustomNavbar /> : undefined}
-        padding="md"
-        fixed={false}
-      >
-        <Container>
-          {children}
-        </Container>
-      </AppShell>
+        <AppShell
+          header={header ? <CustomHeader /> : undefined}
+          navbar={navbar ? <CustomNavbar /> : undefined}
+          padding="md"
+          fixed={false}
+        >
+          <Container>
+            {children}
+          </Container>
+        </AppShell>
       )}
       {!access && message}
     </div>

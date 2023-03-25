@@ -71,6 +71,7 @@ export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
   iconUrl?: InputMaybe<Scalars['String']>;
+  isDarkTheme?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
   newUserId?: InputMaybe<Scalars['String']>;
   userId: Scalars['String'];
@@ -90,6 +91,8 @@ export type UserData = Node & {
   id: Scalars['ID'];
   /** Admin権限の有無\nクライアント側からの変更禁止 */
   isAdmin: Scalars['Boolean'];
+  /** ダークテーマ設定 */
+  isDarkTheme: Scalars['Boolean'];
   /** 各ユーザーの表示名 */
   name: Scalars['String'];
   /** 各ユーザーが任意につけられるかつUniqueなID */
@@ -120,7 +123,7 @@ export type UpdateUserDataMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?: { __typename?: 'UserData', userId: string, email?: string | null, name: string, bio?: string | null, iconUrl?: string | null } | null };
+export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?: { __typename?: 'UserData', userId: string, email?: string | null, name: string, bio?: string | null, iconUrl?: string | null, isDarkTheme: boolean } | null };
 
 
 export const CheckUserIdDocument = gql`
@@ -238,6 +241,7 @@ export const UpdateUserDataDocument = gql`
     name
     bio
     iconUrl
+    isDarkTheme
   }
 }
     `;
