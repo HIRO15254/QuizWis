@@ -6,8 +6,11 @@ export const updateUserDataInput = inputObjectType({
   name: 'UpdateUserDataInput',
   definition(t) {
     t.nonNull.string('userId');
-    t.nonNull.string('name');
+    t.string('newUserId');
+    t.string('name');
+    t.string('email');
     t.string('bio');
+    t.string('iconUrl');
   },
 });
 
@@ -33,8 +36,11 @@ export const updateUserDataMutation = mutationField('updateUserData', {
         userId: input.userId,
       },
       data: {
-        name: input.name,
+        userId: input.newUserId ?? undefined,
+        name: input.name ?? undefined,
+        email: input.email ?? undefined,
         bio: input.bio ?? undefined,
+        iconUrl: input.iconUrl ?? undefined,
       },
     });
   },

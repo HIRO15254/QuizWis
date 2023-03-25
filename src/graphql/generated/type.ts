@@ -26,6 +26,10 @@ export type CreateUserDataInput = {
   userId: Scalars['String'];
 };
 
+export type GetUserDataInput = {
+  userId: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createUserData?: Maybe<UserData>;
@@ -48,8 +52,14 @@ export type Node = {
 
 export type Query = {
   __typename?: 'Query';
+  getUserData?: Maybe<UserData>;
   me?: Maybe<UserData>;
   node?: Maybe<Node>;
+};
+
+
+export type QueryGetUserDataArgs = {
+  input: GetUserDataInput;
 };
 
 
@@ -59,7 +69,10 @@ export type QueryNodeArgs = {
 
 export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
+  iconUrl?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  newUserId?: InputMaybe<Scalars['String']>;
   userId: Scalars['String'];
 };
 
@@ -72,6 +85,8 @@ export type UserData = Node & {
   databaseId: Scalars['ID'];
   /** 各ユーザーemailアドレス */
   email?: Maybe<Scalars['String']>;
+  /** ユーザーのアイコン画像のURL */
+  iconUrl?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   /** Admin権限の有無\nクライアント側からの変更禁止 */
   isAdmin: Scalars['Boolean'];
@@ -80,6 +95,13 @@ export type UserData = Node & {
   /** 各ユーザーが任意につけられるかつUniqueなID */
   userId: Scalars['String'];
 };
+
+export type CheckUserIdQueryVariables = Exact<{
+  input: GetUserDataInput;
+}>;
+
+
+export type CheckUserIdQuery = { __typename?: 'Query', getUserData?: { __typename?: 'UserData', userId: string } | null };
 
 export type CreateUserDataMutationVariables = Exact<{
   input: CreateUserDataInput;
@@ -91,9 +113,51 @@ export type CreateUserDataMutation = { __typename?: 'Mutation', createUserData?:
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'UserData', userId: string, name: string } | null };
+export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'UserData', userId: string, name: string, bio?: string | null, email?: string | null, isAdmin: boolean, iconUrl?: string | null } | null };
+
+export type UpdateUserDataMutationVariables = Exact<{
+  input: UpdateUserDataInput;
+}>;
 
 
+export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?: { __typename?: 'UserData', userId: string, email?: string | null, name: string, bio?: string | null, iconUrl?: string | null } | null };
+
+
+export const CheckUserIdDocument = gql`
+    query checkUserId($input: GetUserDataInput!) {
+  getUserData(input: $input) {
+    userId
+  }
+}
+    `;
+
+/**
+ * __useCheckUserIdQuery__
+ *
+ * To run a query within a React component, call `useCheckUserIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckUserIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckUserIdQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCheckUserIdQuery(baseOptions: Apollo.QueryHookOptions<CheckUserIdQuery, CheckUserIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CheckUserIdQuery, CheckUserIdQueryVariables>(CheckUserIdDocument, options);
+      }
+export function useCheckUserIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CheckUserIdQuery, CheckUserIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CheckUserIdQuery, CheckUserIdQueryVariables>(CheckUserIdDocument, options);
+        }
+export type CheckUserIdQueryHookResult = ReturnType<typeof useCheckUserIdQuery>;
+export type CheckUserIdLazyQueryHookResult = ReturnType<typeof useCheckUserIdLazyQuery>;
+export type CheckUserIdQueryResult = Apollo.QueryResult<CheckUserIdQuery, CheckUserIdQueryVariables>;
 export const CreateUserDataDocument = gql`
     mutation CreateUserData($input: CreateUserDataInput!) {
   createUserData(input: $input) {
@@ -132,6 +196,10 @@ export const GetMeDocument = gql`
   me {
     userId
     name
+    bio
+    email
+    isAdmin
+    iconUrl
   }
 }
     `;
@@ -162,3 +230,40 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const UpdateUserDataDocument = gql`
+    mutation updateUserData($input: UpdateUserDataInput!) {
+  updateUserData(input: $input) {
+    userId
+    email
+    name
+    bio
+    iconUrl
+  }
+}
+    `;
+export type UpdateUserDataMutationFn = Apollo.MutationFunction<UpdateUserDataMutation, UpdateUserDataMutationVariables>;
+
+/**
+ * __useUpdateUserDataMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserDataMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserDataMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserDataMutation, { data, loading, error }] = useUpdateUserDataMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateUserDataMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserDataMutation, UpdateUserDataMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserDataMutation, UpdateUserDataMutationVariables>(UpdateUserDataDocument, options);
+      }
+export type UpdateUserDataMutationHookResult = ReturnType<typeof useUpdateUserDataMutation>;
+export type UpdateUserDataMutationResult = Apollo.MutationResult<UpdateUserDataMutation>;
+export type UpdateUserDataMutationOptions = Apollo.BaseMutationOptions<UpdateUserDataMutation, UpdateUserDataMutationVariables>;

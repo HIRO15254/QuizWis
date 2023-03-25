@@ -8,6 +8,7 @@ import {
   Menu,
 } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
+import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
 import React from 'react';
 
@@ -25,7 +26,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface UserButtonProps extends UnstyledButtonProps {
-  image: string;
+  image?: string;
   name: string;
   userId: string;
 }
@@ -38,6 +39,7 @@ const UserButton = ({
   image, name, userId, ...others
 }: UserButtonProps) => {
   const { classes } = useStyles();
+  const router = useRouter();
 
   return (
     <Menu position="right-end" width={200}>
@@ -62,7 +64,7 @@ const UserButton = ({
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item onClick={() => {}}>Profile</Menu.Item>
-        <Menu.Item onClick={() => {}}>Settings</Menu.Item>
+        <Menu.Item onClick={() => { router.push('/user/settings'); }}>Settings</Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={logout} color="red">Logout</Menu.Item>
       </Menu.Dropdown>

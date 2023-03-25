@@ -32,7 +32,7 @@ export const createContext: CreateContextType = async (req) => {
   const currentUserData = currentUser
     ? await prisma.userData.findUnique({
       where: {
-        userId: currentUser.id,
+        databaseId: currentUser.userDataId || '',
       },
     })
     : null;

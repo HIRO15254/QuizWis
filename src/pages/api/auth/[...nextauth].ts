@@ -32,14 +32,18 @@ export const authOptions: AuthOptions = {
       // eslint-disable-next-line no-param-reassign
       session.user.userDataLinked = !!userValue?.userDataId;
       // eslint-disable-next-line no-param-reassign
-      session.user.id = userValue?.id || '';
+      session.user.id = userValue?.id ?? '';
       // eslint-disable-next-line no-param-reassign
-      session.userData = { userId: userDataValue?.userId || '' };
+      session.userData = {
+        userId: userDataValue?.userId ?? '',
+        iconUrl: userDataValue?.iconUrl ?? undefined,
+        name: userDataValue?.name ?? '',
+      };
       return session;
     },
   },
   useSecureCookies: process.env.NODE_ENV === 'production',
-  secret: process.env.NEXTAUTH_SECRET || '',
+  secret: process.env.NEXTAUTH_SECRET ?? '',
   pages: {
     signIn: '/auth/login',
   },

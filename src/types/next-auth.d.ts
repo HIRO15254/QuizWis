@@ -8,6 +8,8 @@ declare module 'next-auth' {
     } & DefaultSession['user'];
     userData: {
       userId: string;
+      iconUrl?: string;
+      name: string;
     }
   }
 }
