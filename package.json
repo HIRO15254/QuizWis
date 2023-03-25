@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "prisma migrate dev && next dev",
-    "build": "next build && prisma migrate deploy",
+    "build": "prisma generate && next build && prisma migrate deploy",
     "start": "next start",
     "eslint": "eslint .",
     "codegen": "prisma generate && graphql-codegen --config codegen.yml"
