@@ -36,9 +36,8 @@ export const authOptions: AuthOptions = {
       // eslint-disable-next-line no-param-reassign
       session.userData = {
         userId: userDataValue?.userId ?? '',
-        iconUrl: userDataValue?.iconUrl ?? undefined,
         name: userDataValue?.name ?? '',
-        isDarkTheme: userDataValue?.isDarkTheme ?? false,
+        iconUrl: userDataValue?.iconUrl ?? undefined,
       };
       return session;
     },

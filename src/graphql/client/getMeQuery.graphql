@@ -1,10 +1,11 @@
-query getMe {
-  me {
+query getLoginUser {
+  loginUser {
     userId
     name
     bio
     email
     isAdmin
     iconUrl
+    isDarkTheme
   }
 }
