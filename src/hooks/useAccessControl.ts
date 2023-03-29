@@ -8,7 +8,7 @@ export type AccessControlType = 'public' | 'authenticated';
 /**
  * 設定したページにアクセスコントロールを掛けるhook
  */
-const useAccessControl = (accessControlType: AccessControlType) => {
+const useAccessControl = (accessControlType: AccessControlType): [boolean, string] => {
   const { status } = useSession();
   const { asPath } = useRouter();
   const [message, setMessage] = useState('Loading...');

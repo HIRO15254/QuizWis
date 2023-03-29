@@ -1,5 +1,5 @@
-query getLoginUser {
-  loginUser {
+query getUserData($input: GetUserDataInput!) {
+  getUserData(input: $input) {
     userId
     name
     bio

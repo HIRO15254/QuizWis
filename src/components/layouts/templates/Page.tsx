@@ -25,7 +25,6 @@ const Page = (props: PageProps) => {
   const [access, message] = useAccessControl(accessControl);
   useLoginHandle();
   return (
-
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {access && (
         <AppShell

@@ -1,20 +1,21 @@
 import { MantineProvider, Global } from '@mantine/core';
-import { useSession } from 'next-auth/react';
 import React, { ReactNode } from 'react';
+
+import useDarkTheme from '../hooks/useDarkTheme';
 
 type StyleProviderProps = {
   children: ReactNode;
 };
 
 const StyleProvider = (props: StyleProviderProps) => {
-  const { data: session } = useSession();
+  const [darkTheme] = useDarkTheme();
   const { children } = props;
   return (
     <MantineProvider
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        colorScheme: session?.userData?.isDarkTheme ? 'dark' : 'light',
+        colorScheme: darkTheme ? 'dark' : 'light',
       }}
     >
       <Global

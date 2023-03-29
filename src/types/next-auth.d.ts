@@ -10,7 +10,6 @@ declare module 'next-auth' {
       userId: string;
       iconUrl?: string;
       name: string;
-      isDarkTheme: boolean;
     }
   }
 }

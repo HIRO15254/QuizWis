@@ -6,7 +6,7 @@ import { SessionProvider } from 'next-auth/react';
 import React from 'react';
 
 import StyleProvider from './_style';
-import Page from '../features/layouts/components/Page';
+import Page from '../components/layouts/templates/Page';
 import apolloClient from '../lib/apollo';
 
 import type { AppProps } from 'next/app';

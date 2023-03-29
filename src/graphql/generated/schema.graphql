@@ -34,7 +34,7 @@ interface Node {
 
 type Query {
   getUserData(input: GetUserDataInput!): UserData
-  me: UserData
+  loginUser: UserData
   node(id: String!): Node
 }
 
