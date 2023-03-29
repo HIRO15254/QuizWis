@@ -1,12 +1,13 @@
 import {
-  Header, Button, Group, Title, Text,
+  Header, Button, Group, Title,
 } from '@mantine/core';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
 /**
- * デフォルトのヘッダー
+ * 画面上部に表示するヘッダー
+ * TODO: ログイン時の表示をどうにかする
  */
 const CustomHeader = () => {
   const { data: session } = useSession();
@@ -26,9 +27,9 @@ const CustomHeader = () => {
           </Button>
         )}
         {session && (
-          <Text component="a" href="/user/mypage">
-            {session.user?.name}
-          </Text>
+          <Button variant="outline" color="blue" component="a" href="/user/mypage">
+            マイページ
+          </Button>
         )}
       </Group>
     </Header>

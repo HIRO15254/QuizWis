@@ -48,6 +48,9 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+/**
+ * 画面左側に表示するナビゲーションバー
+ */
 const CustomNavbar = () => {
   const { classes } = useStyles();
   const { data: session } = useSession();
@@ -61,8 +64,8 @@ const CustomNavbar = () => {
 
       <Navbar.Section className={classes.footer}>
         <UserButton
-          name={session?.userData?.name ?? 'Undefined User'}
-          userId={session?.userData?.userId ?? 'undefined'}
+          name={session?.userData?.name ?? ''}
+          userId={session?.userData?.userId ?? ''}
           image={session?.userData?.iconUrl}
         />
       </Navbar.Section>

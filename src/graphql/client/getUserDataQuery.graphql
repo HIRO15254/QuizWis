@@ -1,0 +1,11 @@
+query getUserData($input: GetUserDataInput!) {
+  getUserData(input: $input) {
+    userId
+    name
+    bio
+    email
+    isAdmin
+    iconUrl
+    isDarkTheme
+  }
+}

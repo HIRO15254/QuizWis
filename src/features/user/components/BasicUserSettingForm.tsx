@@ -7,7 +7,8 @@ import { IconAlertCircle, IconAt } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 
-import { useCheckUserIdLazyQuery, useGetMeQuery, useUpdateUserDataMutation } from '../../../graphql/generated/type';
+import { useUpdateUserDataMutation, useGetLoginUserQuery } from '../../../graphql/generated/type';
+import useCheckUserIdLazyQuery from '../hooks/useCheckIdLazyQuery';
 
 /**
  * ユーザーの情報を変更するフォーム。
@@ -16,7 +17,7 @@ import { useCheckUserIdLazyQuery, useGetMeQuery, useUpdateUserDataMutation } fro
 const BasicUserSettingForm = () => {
   const { data: session } = useSession();
   const [checkUserId] = useCheckUserIdLazyQuery();
-  const { data: userData, loading } = useGetMeQuery();
+  const { data: userData, loading } = useGetLoginUserQuery();
   const [updateUserData] = useUpdateUserDataMutation();
 
   /**
@@ -34,10 +35,9 @@ const BasicUserSettingForm = () => {
     if (value.length < 6 || value.length > 20) {
       return '6文字以上20文字以下で入力してください';
     }
-    checkUserId({ variables: { input: { userId: value } } }).then((result) => {
+    checkUserId(value).then((result) => {
       if (
-        result.data?.getUserData?.userId
-        && result.data.getUserData.userId !== session?.userData?.userId
+        result && value !== session?.userData?.userId
       ) {
         // BAD: この関数内でformを参照している
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -72,9 +72,9 @@ const BasicUserSettingForm = () => {
   useEffect(() => {
     if (!loading) {
       form.setValues({
-        userId: userData?.me?.userId,
-        name: userData?.me?.name,
-        email: userData?.me?.email ?? '',
+        userId: userData?.loginUser?.userId,
+        name: userData?.loginUser?.name,
+        email: userData?.loginUser?.email ?? '',
       });
     }
   }, [loading]);

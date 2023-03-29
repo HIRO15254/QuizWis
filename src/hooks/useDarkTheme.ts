@@ -1,47 +1,46 @@
 import { useEffect, useState } from 'react';
 
 import useNotification from './useNotification';
-import { useUpdateUserDataMutation, useGetMeQuery } from '../graphql/generated/type';
+import { useUpdateUserDataMutation, useGetLoginUserQuery } from '../graphql/generated/type';
 
-const useDarkTheme = (): [boolean, () => Promise<void>] => {
+/**
+ * ダークテーマやその切り替えを扱うhook
+ */
+const useDarkTheme = (): [boolean, () => Promise<boolean>] => {
   const [darkTheme, setDarkTheme] = useState(false);
   const [updateUserData] = useUpdateUserDataMutation();
-  const [showNotification] = useNotification();
+  const { errorNotification } = useNotification();
 
-  const { data: loginUser, loading } = useGetMeQuery();
+  const { data: loginUserData, loading } = useGetLoginUserQuery();
 
   useEffect(() => {
     if (!loading) {
-      if (loginUser?.me) {
-        setDarkTheme(loginUser.me.isDarkTheme);
+      if (loginUserData?.loginUser) {
+        setDarkTheme(loginUserData.loginUser.isDarkTheme);
       } else {
-        showNotification({
-          category: 'error',
-          title: 'エラー',
-          message: 'ダークテーマ情報の取得に失敗しました。',
-        });
+        errorNotification({ message: 'ダークテーマ情報の取得に失敗しました。' });
       }
     }
   }, [loading]);
 
+  /**
+   * ダークテーマの切り替え
+   */
   const switchDarkTheme = async () => {
     await updateUserData({
       variables: {
         input: {
-          userId: loginUser?.me?.userId || '',
+          userId: loginUserData?.loginUser?.userId || '',
           isDarkTheme: !darkTheme,
         },
       },
     }).catch(() => {
-      showNotification({
-        category: 'error',
-        title: 'エラー',
-        message: 'ダークテーマの切り替えに失敗しました。',
-      });
+      errorNotification({ message: 'ダークテーマの切り替えに失敗しました。' });
     });
     setDarkTheme(!darkTheme);
     // ダークテーマの切り替えを反映させる
     document.dispatchEvent(new Event('visibilitychange'));
+    return darkTheme;
   };
 
   return [darkTheme, switchDarkTheme];
