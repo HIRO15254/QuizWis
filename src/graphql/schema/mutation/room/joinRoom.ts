@@ -17,35 +17,37 @@ export const joinRoomMutation = mutationField('joinRoom', {
   },
   async resolve(_parent, { input }, ctx) {
     const hashedPassword = input.password ? await ctx.hash(input.password) : undefined;
-    const target = await ctx.prisma.room.findUnique({
-      where: {
-        databaseId: input.databaseId,
-      },
-    });
-    if (!target) {
-      throw new Error('存在しないルームへの入室です');
-    }
-    if (!ctx.currentUserData) {
-      throw new Error('ログインしていません');
-    }
-    if (ctx.currentUserData.roomId !== null) {
-      throw new Error('一度に複数のルームに入室することはできません');
-    }
-    if (target.hashedPassword !== hashedPassword) {
-      throw new Error('パスワードが違います');
-    }
-    const ret = await ctx.prisma.room.update({
-      where: {
-        databaseId: input.databaseId,
-      },
-      data: {
-        users: {
-          connect: {
-            databaseId: ctx.currentUserData.databaseId,
+    return ctx.prisma.$transaction(async (prisma) => {
+      const target = await prisma.room.findUnique({
+        where: {
+          databaseId: input.databaseId,
+        },
+      });
+      if (!target) {
+        throw new Error('存在しないルームへの入室です');
+      }
+      if (!ctx.currentUserData) {
+        throw new Error('ログインしていません');
+      }
+      if (ctx.currentUserData.roomId !== null) {
+        throw new Error('一度に複数のルームに入室することはできません');
+      }
+      if (target.hashedPassword !== hashedPassword) {
+        throw new Error('パスワードが違います');
+      }
+      const ret = await prisma.room.update({
+        where: {
+          databaseId: input.databaseId,
+        },
+        data: {
+          users: {
+            connect: {
+              databaseId: ctx.currentUserData.databaseId,
+            },
           },
         },
-      },
+      });
+      return ret;
     });
-    return ret;
   },
 });
