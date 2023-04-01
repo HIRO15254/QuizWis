@@ -32,7 +32,6 @@ const LoginPage: PageFC = () => {
 LoginPage.getInitialProps = async () => ({
   title: 'ログイン - QuizWis',
   accessControl: 'public',
-  navbar: false,
 });
 
 export default LoginPage;

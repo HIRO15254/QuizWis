@@ -7,8 +7,8 @@ import { IconAlertCircle, IconAt } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 
-import { useUpdateUserDataMutation, useGetLoginUserQuery } from '../../../graphql/generated/type';
-import useCheckUserIdLazyQuery from '../hooks/useCheckIdLazyQuery';
+import { useUpdateUserDataMutation, useGetLoginUserQuery } from '../../../../graphql/generated/type';
+import useCheckUserIdLazyQuery from '../../hooks/useCheckIdLazyQuery';
 
 /**
  * ユーザーの情報を変更するフォーム。

@@ -19,6 +19,11 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type CreateRoomInput = {
+  name: Scalars['String'];
+  password?: InputMaybe<Scalars['String']>;
+};
+
 export type CreateUserDataInput = {
   authUserId: Scalars['ID'];
   bio?: InputMaybe<Scalars['String']>;
@@ -26,19 +31,42 @@ export type CreateUserDataInput = {
   userId: Scalars['String'];
 };
 
+export type GetRoomsInput = {
+  isActive?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type GetUserDataInput = {
   userId: Scalars['String'];
 };
 
+export type JoinRoomInput = {
+  databaseId: Scalars['String'];
+  password?: InputMaybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createRoom?: Maybe<Room>;
   createUserData?: Maybe<UserData>;
+  joinRoom?: Maybe<Room>;
+  leaveRoom?: Maybe<Room>;
+  switchDarkTheme?: Maybe<UserData>;
   updateUserData?: Maybe<UserData>;
+};
+
+
+export type MutationCreateRoomArgs = {
+  input: CreateRoomInput;
 };
 
 
 export type MutationCreateUserDataArgs = {
   input: CreateUserDataInput;
+};
+
+
+export type MutationJoinRoomArgs = {
+  input: JoinRoomInput;
 };
 
 
@@ -52,9 +80,15 @@ export type Node = {
 
 export type Query = {
   __typename?: 'Query';
+  getRooms?: Maybe<Array<Maybe<Room>>>;
   getUserData?: Maybe<UserData>;
   loginUser?: Maybe<UserData>;
   node?: Maybe<Node>;
+};
+
+
+export type QueryGetRoomsArgs = {
+  input: GetRoomsInput;
 };
 
 
@@ -66,6 +100,31 @@ export type QueryGetUserDataArgs = {
 export type QueryNodeArgs = {
   id: Scalars['String'];
 };
+
+export type Room = Node & {
+  __typename?: 'Room';
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
+  /** データベース上のID */
+  databaseId: Scalars['ID'];
+  hasPassword: Scalars['Boolean'];
+  /** 参加に必要なパスワード */
+  hashedPassword?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  /** ルームが有効かどうか（ルーム一覧に表示するかどうか） */
+  isActive: Scalars['Boolean'];
+  /** ルーム名 */
+  name: Scalars['String'];
+  /** 更新日時 */
+  updatedAt: Scalars['DateTime'];
+  /** 解答者であるユーザー */
+  users: Array<UserData>;
+};
+
+export enum RoomRole {
+  Owner = 'OWNER',
+  Player = 'PLAYER'
+}
 
 export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
@@ -95,9 +154,20 @@ export type UserData = Node & {
   isDarkTheme: Scalars['Boolean'];
   /** 各ユーザーの表示名 */
   name: Scalars['String'];
+  /** 得点表示用ルームのID */
+  room?: Maybe<Room>;
+  roomId?: Maybe<Scalars['String']>;
+  roomRole?: Maybe<RoomRole>;
   /** 各ユーザーが任意につけられるかつUniqueなID */
   userId: Scalars['String'];
 };
+
+export type CreateRoomMutationVariables = Exact<{
+  input: CreateRoomInput;
+}>;
+
+
+export type CreateRoomMutation = { __typename?: 'Mutation', createRoom?: { __typename?: 'Room', id: string, name: string } | null };
 
 export type CreateUserDataMutationVariables = Exact<{
   input: CreateUserDataInput;
@@ -105,6 +175,11 @@ export type CreateUserDataMutationVariables = Exact<{
 
 
 export type CreateUserDataMutation = { __typename?: 'Mutation', createUserData?: { __typename?: 'UserData', userId: string } | null };
+
+export type GetActiveRoomsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveRoomsQuery = { __typename?: 'Query', getRooms?: Array<{ __typename?: 'Room', hasPassword: boolean, id: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', id: string, iconUrl?: string | null }> } | null> | null };
 
 export type GetLoginUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -118,6 +193,11 @@ export type GetUserDataQueryVariables = Exact<{
 
 export type GetUserDataQuery = { __typename?: 'Query', getUserData?: { __typename?: 'UserData', userId: string, name: string, bio?: string | null, email?: string | null, isAdmin: boolean, iconUrl?: string | null, isDarkTheme: boolean } | null };
 
+export type SwitchDarkThemeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SwitchDarkThemeMutation = { __typename?: 'Mutation', switchDarkTheme?: { __typename?: 'UserData', isDarkTheme: boolean } | null };
+
 export type UpdateUserDataMutationVariables = Exact<{
   input: UpdateUserDataInput;
 }>;
@@ -126,6 +206,40 @@ export type UpdateUserDataMutationVariables = Exact<{
 export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?: { __typename?: 'UserData', userId: string, email?: string | null, name: string, bio?: string | null, iconUrl?: string | null, isDarkTheme: boolean } | null };
 
 
+export const CreateRoomDocument = gql`
+    mutation CreateRoom($input: CreateRoomInput!) {
+  createRoom(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type CreateRoomMutationFn = Apollo.MutationFunction<CreateRoomMutation, CreateRoomMutationVariables>;
+
+/**
+ * __useCreateRoomMutation__
+ *
+ * To run a mutation, you first call `useCreateRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRoomMutation, { data, loading, error }] = useCreateRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateRoomMutation, CreateRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, options);
+      }
+export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
+export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
+export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
 export const CreateUserDataDocument = gql`
     mutation CreateUserData($input: CreateUserDataInput!) {
   createUserData(input: $input) {
@@ -159,6 +273,47 @@ export function useCreateUserDataMutation(baseOptions?: Apollo.MutationHookOptio
 export type CreateUserDataMutationHookResult = ReturnType<typeof useCreateUserDataMutation>;
 export type CreateUserDataMutationResult = Apollo.MutationResult<CreateUserDataMutation>;
 export type CreateUserDataMutationOptions = Apollo.BaseMutationOptions<CreateUserDataMutation, CreateUserDataMutationVariables>;
+export const GetActiveRoomsDocument = gql`
+    query GetActiveRooms {
+  getRooms(input: {isActive: true}) {
+    hasPassword
+    id
+    name
+    isActive
+    users {
+      id
+      iconUrl
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActiveRoomsQuery__
+ *
+ * To run a query within a React component, call `useGetActiveRoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActiveRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActiveRoomsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActiveRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
+      }
+export function useGetActiveRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
+        }
+export type GetActiveRoomsQueryHookResult = ReturnType<typeof useGetActiveRoomsQuery>;
+export type GetActiveRoomsLazyQueryHookResult = ReturnType<typeof useGetActiveRoomsLazyQuery>;
+export type GetActiveRoomsQueryResult = Apollo.QueryResult<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>;
 export const GetLoginUserDocument = gql`
     query getLoginUser {
   loginUser {
@@ -240,6 +395,38 @@ export function useGetUserDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetUserDataQueryHookResult = ReturnType<typeof useGetUserDataQuery>;
 export type GetUserDataLazyQueryHookResult = ReturnType<typeof useGetUserDataLazyQuery>;
 export type GetUserDataQueryResult = Apollo.QueryResult<GetUserDataQuery, GetUserDataQueryVariables>;
+export const SwitchDarkThemeDocument = gql`
+    mutation switchDarkTheme {
+  switchDarkTheme {
+    isDarkTheme
+  }
+}
+    `;
+export type SwitchDarkThemeMutationFn = Apollo.MutationFunction<SwitchDarkThemeMutation, SwitchDarkThemeMutationVariables>;
+
+/**
+ * __useSwitchDarkThemeMutation__
+ *
+ * To run a mutation, you first call `useSwitchDarkThemeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSwitchDarkThemeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [switchDarkThemeMutation, { data, loading, error }] = useSwitchDarkThemeMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSwitchDarkThemeMutation(baseOptions?: Apollo.MutationHookOptions<SwitchDarkThemeMutation, SwitchDarkThemeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SwitchDarkThemeMutation, SwitchDarkThemeMutationVariables>(SwitchDarkThemeDocument, options);
+      }
+export type SwitchDarkThemeMutationHookResult = ReturnType<typeof useSwitchDarkThemeMutation>;
+export type SwitchDarkThemeMutationResult = Apollo.MutationResult<SwitchDarkThemeMutation>;
+export type SwitchDarkThemeMutationOptions = Apollo.BaseMutationOptions<SwitchDarkThemeMutation, SwitchDarkThemeMutationVariables>;
 export const UpdateUserDataDocument = gql`
     mutation updateUserData($input: UpdateUserDataInput!) {
   updateUserData(input: $input) {

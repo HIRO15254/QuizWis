@@ -9,6 +9,7 @@ import {
   rem,
 } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import Router from 'next/router';
 import React, { useState } from 'react';
 
 const useStyles = createStyles((theme) => ({
@@ -55,30 +56,39 @@ interface LinksGroupProps {
   label: string;
   initiallyOpened?: boolean;
   links?: { label: string; link: string }[];
+  link?: string;
 }
 
 const LinksGroup = ({
-  icon: Icon, label, initiallyOpened, links,
+  icon: Icon, label, initiallyOpened, links, link,
 }: LinksGroupProps) => {
   const { classes, theme } = useStyles();
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === 'ltr' ? IconChevronRight : IconChevronLeft;
-  const items = (hasLinks ? links : []).map((link) => (
+  const items = (hasLinks ? links : []).map((mappedLink) => (
     <Text<'a'>
       component="a"
       className={classes.link}
-      href={link.link}
-      key={link.label}
+      href={mappedLink.link}
+      key={mappedLink.label}
       onClick={(event) => event.preventDefault()}
     >
-      {link.label}
+      {mappedLink.label}
     </Text>
   ));
 
+  const onClick = () => {
+    if (hasLinks) {
+      setOpened((o) => !o);
+    } else {
+      Router.push(link ?? '/');
+    }
+  };
+
   return (
     <>
-      <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
+      <UnstyledButton onClick={onClick} className={classes.control}>
         <Group position="apart" spacing={0}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <ThemeIcon variant="light" size={30}>

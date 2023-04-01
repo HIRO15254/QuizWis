@@ -1,5 +1,6 @@
 import { ContextFunction } from '@apollo/server';
 import { PrismaClient, User, UserData } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import { NextApiHandler } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -9,6 +10,7 @@ export type Context = {
   prisma: PrismaClient
   currentUser: User | null
   currentUserData: UserData | null
+  hash: (text: string) => Promise<string>
 };
 
 type CreateContextType = ContextFunction<Parameters<NextApiHandler>, Context>;
@@ -36,10 +38,13 @@ export const createContext: CreateContextType = async (req) => {
       },
     })
     : null;
+  const saltRounds = 10;
+  const hash = async (text: string) => bcrypt.hash(text, saltRounds);
 
   return {
     prisma,
     currentUser,
     currentUserData,
+    hash,
   };
 };

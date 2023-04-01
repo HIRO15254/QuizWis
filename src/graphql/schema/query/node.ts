@@ -15,6 +15,10 @@ export const nodeQuery = queryField('node', {
       const res = ctx.prisma.userData.findUnique({ where: { databaseId } });
       return res ? { ...res, __typename: 'UserData' } : null;
     }
+    if (type === 'Room') {
+      const res = ctx.prisma.room.findUnique({ where: { databaseId } });
+      return res ? { ...res, __typename: 'Room' } : null;
+    }
     return null;
   },
 });

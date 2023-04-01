@@ -93,4 +93,32 @@ model UserData {
   /// nextauth用データ構造と紐づける用。公開しない
   /// 本来はrequiredだがPrismaの仕様上無理
   authUser User?
+
+  /// 得点表示用ルーム
+  room     Room?     @relation(fields: [roomId], references: [databaseId])
+  roomId   String?
+  roomRole RoomRole?
+}
+
+enum RoomRole {
+  OWNER
+  PLAYER
+}
+
+model Room {
+  /// データベース上のID
+  databaseId     String     @id @default(cuid()) @map("id")
+  /// ルーム名
+  name           String
+  /// ルームが有効かどうか（ルーム一覧に表示するかどうか）
+  isActive       Boolean    @default(true)
+  /// 参加に必要なパスワード
+  hashedPassword String?
+  /// 解答者であるユーザー
+  users          UserData[]
+
+  /// 作成日時
+  createdAt DateTime @default(now())
+  /// 更新日時
+  updatedAt DateTime @updatedAt
 }

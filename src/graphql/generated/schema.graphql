@@ -7,6 +7,11 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+input CreateRoomInput {
+  name: String!
+  password: String
+}
+
 input CreateUserDataInput {
   authUserId: ID!
   bio: String
@@ -19,12 +24,25 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input GetRoomsInput {
+  isActive: Boolean
+}
+
 input GetUserDataInput {
   userId: String!
 }
 
+input JoinRoomInput {
+  databaseId: String!
+  password: String
+}
+
 type Mutation {
+  createRoom(input: CreateRoomInput!): Room
   createUserData(input: CreateUserDataInput!): UserData
+  joinRoom(input: JoinRoomInput!): Room
+  leaveRoom: Room
+  switchDarkTheme: UserData
   updateUserData(input: UpdateUserDataInput!): UserData
 }
 
@@ -33,9 +51,40 @@ interface Node {
 }
 
 type Query {
+  getRooms(input: GetRoomsInput!): [Room]
   getUserData(input: GetUserDataInput!): UserData
   loginUser: UserData
   node(id: String!): Node
+}
+
+type Room implements Node {
+  """作成日時"""
+  createdAt: DateTime!
+
+  """データベース上のID"""
+  databaseId: ID!
+  hasPassword: Boolean!
+
+  """参加に必要なパスワード"""
+  hashedPassword: String
+  id: ID!
+
+  """ルームが有効かどうか（ルーム一覧に表示するかどうか）"""
+  isActive: Boolean!
+
+  """ルーム名"""
+  name: String!
+
+  """更新日時"""
+  updatedAt: DateTime!
+
+  """解答者であるユーザー"""
+  users: [UserData!]!
+}
+
+enum RoomRole {
+  OWNER
+  PLAYER
 }
 
 input UpdateUserDataInput {
@@ -71,6 +120,11 @@ type UserData implements Node {
 
   """各ユーザーの表示名"""
   name: String!
+
+  """得点表示用ルームのID"""
+  room: Room
+  roomId: String
+  roomRole: RoomRole
 
   """各ユーザーが任意につけられるかつUniqueなID"""
   userId: String!

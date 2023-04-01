@@ -7,10 +7,10 @@ import { useSession } from 'next-auth/react';
 import pica from 'pica';
 import React from 'react';
 
-import { useUpdateUserDataMutation } from '../../../graphql/generated/type';
-import useNotification from '../../../hooks/useNotification';
-import { supabase } from '../../../lib/supabase';
-import AvatarEditModal, { OnImageSavePayload } from '../parts/AvatarEditModal';
+import { useUpdateUserDataMutation } from '../../../../graphql/generated/type';
+import useNotification from '../../../../hooks/useNotification';
+import { supabase } from '../../../../lib/supabase';
+import AvatarEditModal, { OnImageSavePayload } from '../templates/AvatarEditModal';
 
 const createImageID = () => {
   const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -18,7 +18,7 @@ const createImageID = () => {
   return [...Array(length)].map(() => c[Math.floor(Math.random() * c.length)]).join('');
 };
 
-const IconUploader = () => {
+const IconUploadForm = () => {
   const { data: session } = useSession();
   const [opened, { open, close }] = useDisclosure(false);
   const [image, setImage] = React.useState<File | null>(null);
@@ -85,7 +85,7 @@ const IconUploader = () => {
     >
       <AvatarEditModal opened={opened} close={close} image={image} onImageSave={onImageSave} />
       <Group pt="sm">
-        <Avatar src={session?.userData?.iconUrl} radius="xl" size="lg" />
+        <Avatar src={session?.userData?.iconUrl} size="lg" />
         <FileInput
           placeholder="ファイルを選択…"
           accept="image/*"
@@ -97,4 +97,4 @@ const IconUploader = () => {
   );
 };
 
-export default IconUploader;
+export default IconUploadForm;
