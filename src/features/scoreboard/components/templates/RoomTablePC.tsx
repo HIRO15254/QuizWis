@@ -7,11 +7,11 @@ import React from 'react';
 import UserIcons from '../../../../components/templates/userIcons';
 
 type RoomProps = {
-  id: string;
+  databaseId: string;
   name: string;
   hasPassword: boolean;
   users : {
-    id: string;
+    databaseId: string;
     iconUrl?: string | null;
   }[]
 };
@@ -36,7 +36,7 @@ const RoomTablePC = (props: RoomListProps) => {
         {rooms.map((room) => {
           if (!room) return null;
           return (
-            <tr key={room.id}>
+            <tr key={room.databaseId}>
               <td>
                 <Text>
                   {room.name}
@@ -50,7 +50,7 @@ const RoomTablePC = (props: RoomListProps) => {
                   size="sm"
                   variant="outline"
                   leftIcon={room.hasPassword ? <IconLock size="1.0rem" /> : <IconDoorEnter size="1rem" />}
-                  onClick={() => onRoomClick(room.id)}
+                  onClick={() => onRoomClick(room.databaseId)}
                 >
                   参加
                 </Button>

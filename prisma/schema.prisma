@@ -97,7 +97,20 @@ model UserData {
   /// 得点表示用ルーム
   room     Room?     @relation(fields: [roomId], references: [databaseId])
   roomId   String?
+  /// ルーム内での役割
   roomRole RoomRole?
+
+  /// ルーム内での得点
+  rule Rule[]
+
+  /// ルーム内アクション関係リレーション
+  actions         Action[] @relation("actionUser")
+  targetedActions Action[] @relation("targetUser")
+
+  /// 作成日時
+  createdAt DateTime @default(now())
+  /// 更新日時
+  updatedAt DateTime @updatedAt
 }
 
 enum RoomRole {
@@ -114,8 +127,51 @@ model Room {
   isActive       Boolean    @default(true)
   /// 参加に必要なパスワード
   hashedPassword String?
-  /// 解答者であるユーザー
+  /// 参加中のユーザー
   users          UserData[]
+
+  /// 現在実行中のルール
+  currentRule   Rule   @relation("current", fields: [currentRuleId], references: [databaseId])
+  currentRuleId String @unique
+  /// ルールの履歴
+  ruleHistory   Rule[] @relation("history")
+
+  /// 作成日時
+  createdAt DateTime @default(now())
+  /// 更新日時
+  updatedAt DateTime @updatedAt
+}
+
+model Rule {
+  /// データベース上のID
+  databaseId String     @id @default(cuid()) @map("id")
+  /// このルールに参加しているユーザー
+  users      UserData[]
+  /// このルール内で行われたアクション
+  actions    Action[]
+
+  currentRoom Room?  @relation("current")
+  room        Room   @relation("history", fields: [roomId], references: [databaseId])
+  roomId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Action {
+  /// データベース上のID
+  databaseId   String   @id @default(cuid()) @map("id")
+  /// アクションが属するルール
+  rule         Rule     @relation(fields: [ruleId], references: [databaseId])
+  ruleId       String
+  /// アクションを行ったユーザー
+  actionUser   UserData @relation("actionUser", fields: [actionUserId], references: [databaseId])
+  actionUserId String
+  /// アクションを行った対象のユーザー
+  targetUser   UserData @relation("targetUser", fields: [targetUserId], references: [databaseId])
+  targetUserId String
+  /// アクションの種類
+  actionType   String
 
   /// 作成日時
   createdAt DateTime @default(now())

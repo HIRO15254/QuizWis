@@ -5,7 +5,7 @@ import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import { useCreateRoomMutation } from '../../../../graphql/generated/type';
+import { useCreateRoomMutation } from '../../../../../graphql/generated/type';
 
 type CreateRoomModalProps = {
   opened: boolean;
@@ -35,7 +35,7 @@ const CreateRoomModal = (props: CreateRoomModalProps) => {
         input: values,
       },
     });
-    router.push(`/scoreboard/${ret.data?.createRoom?.id}`);
+    router.push(`/scoreboard/${ret.data?.createRoom?.databaseId}`);
     onClose();
   };
 

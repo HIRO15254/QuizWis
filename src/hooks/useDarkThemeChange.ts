@@ -1,9 +1,10 @@
+import { FetchResult } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 
 import useNotification from './useNotification';
-import { useSwitchDarkThemeMutation } from '../graphql/generated/type';
+import { SwitchDarkThemeMutation, useSwitchDarkThemeMutation } from '../graphql/generated/type';
 
-const useDarkTheme = () => {
+const useDarkTheme = (): [boolean, () => Promise<void | FetchResult<SwitchDarkThemeMutation>>] => {
   const [switchTheme] = useSwitchDarkThemeMutation();
   const { errorNotification } = useNotification();
   const { data: session } = useSession();
@@ -16,7 +17,7 @@ const useDarkTheme = () => {
     return ret;
   };
 
-  const isDarkTheme = session?.userData?.isDarkTheme;
+  const isDarkTheme = session?.userData?.isDarkTheme ?? false;
   return [isDarkTheme, switchDarkTheme];
 };
 

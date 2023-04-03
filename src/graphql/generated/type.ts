@@ -19,6 +19,28 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type Action = Node & {
+  __typename?: 'Action';
+  /** アクションの種類 */
+  actionType: Scalars['String'];
+  /** アクションを行ったユーザー */
+  actionUser: UserData;
+  actionUserId: Scalars['String'];
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
+  /** データベース上のID */
+  databaseId: Scalars['ID'];
+  id: Scalars['ID'];
+  /** アクションが属するルール */
+  rule: Rule;
+  ruleId: Scalars['String'];
+  /** アクションを行った対象のユーザー */
+  targetUser: UserData;
+  targetUserId: Scalars['String'];
+  /** 更新日時 */
+  updatedAt: Scalars['DateTime'];
+};
+
 export type CreateRoomInput = {
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
@@ -29,6 +51,10 @@ export type CreateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   userId: Scalars['String'];
+};
+
+export type GetRoomInput = {
+  databaseId: Scalars['String'];
 };
 
 export type GetRoomsInput = {
@@ -80,10 +106,16 @@ export type Node = {
 
 export type Query = {
   __typename?: 'Query';
+  getRoom?: Maybe<Room>;
   getRooms?: Maybe<Array<Maybe<Room>>>;
   getUserData?: Maybe<UserData>;
   loginUser?: Maybe<UserData>;
   node?: Maybe<Node>;
+};
+
+
+export type QueryGetRoomArgs = {
+  input: GetRoomInput;
 };
 
 
@@ -105,6 +137,9 @@ export type Room = Node & {
   __typename?: 'Room';
   /** 作成日時 */
   createdAt: Scalars['DateTime'];
+  /** 現在実行中のルール */
+  currentRule: Rule;
+  currentRuleId: Scalars['String'];
   /** データベース上のID */
   databaseId: Scalars['ID'];
   hasPassword: Scalars['Boolean'];
@@ -115,9 +150,11 @@ export type Room = Node & {
   isActive: Scalars['Boolean'];
   /** ルーム名 */
   name: Scalars['String'];
+  /** ルールの履歴 */
+  ruleHistory: Array<Rule>;
   /** 更新日時 */
   updatedAt: Scalars['DateTime'];
-  /** 解答者であるユーザー */
+  /** 参加中のユーザー */
   users: Array<UserData>;
 };
 
@@ -125,6 +162,22 @@ export enum RoomRole {
   Owner = 'OWNER',
   Player = 'PLAYER'
 }
+
+export type Rule = Node & {
+  __typename?: 'Rule';
+  /** このルール内で行われたアクション */
+  actions: Array<Action>;
+  createdAt: Scalars['DateTime'];
+  currentRoom?: Maybe<Room>;
+  /** データベース上のID */
+  databaseId: Scalars['ID'];
+  id: Scalars['ID'];
+  room: Room;
+  roomDatabaseId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  /** このルールに参加しているユーザー */
+  users: Array<UserData>;
+};
 
 export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
@@ -139,8 +192,12 @@ export type UpdateUserDataInput = {
 /** ユーザーの情報（実際に取得・変更する用） */
 export type UserData = Node & {
   __typename?: 'UserData';
+  /** ルーム内アクション関係リレーション */
+  actions: Array<Action>;
   /** 各ユーザーのプロフィールページの内容 */
   bio?: Maybe<Scalars['String']>;
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
   /** データベース上のID。基本使わない。 */
   databaseId: Scalars['ID'];
   /** 各ユーザーemailアドレス */
@@ -154,10 +211,15 @@ export type UserData = Node & {
   isDarkTheme: Scalars['Boolean'];
   /** 各ユーザーの表示名 */
   name: Scalars['String'];
-  /** 得点表示用ルームのID */
+  /** 得点表示用ルーム */
   room?: Maybe<Room>;
   roomId?: Maybe<Scalars['String']>;
   roomRole?: Maybe<RoomRole>;
+  /** ルーム内での得点 */
+  rule: Array<Rule>;
+  targetedActions: Array<Action>;
+  /** 更新日時 */
+  updatedAt: Scalars['DateTime'];
   /** 各ユーザーが任意につけられるかつUniqueなID */
   userId: Scalars['String'];
 };
@@ -167,7 +229,19 @@ export type CreateRoomMutationVariables = Exact<{
 }>;
 
 
-export type CreateRoomMutation = { __typename?: 'Mutation', createRoom?: { __typename?: 'Room', id: string, name: string } | null };
+export type CreateRoomMutation = { __typename?: 'Mutation', createRoom?: { __typename?: 'Room', databaseId: string, name: string } | null };
+
+export type GetActiveRoomsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveRoomsQuery = { __typename?: 'Query', getRooms?: Array<{ __typename?: 'Room', hasPassword: boolean, databaseId: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', databaseId: string, iconUrl?: string | null }> } | null> | null };
+
+export type GetRoomByDatabaseIdQueryVariables = Exact<{
+  input: GetRoomInput;
+}>;
+
+
+export type GetRoomByDatabaseIdQuery = { __typename?: 'Query', getRoom?: { __typename?: 'Room', hasPassword: boolean, databaseId: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', databaseId: string, iconUrl?: string | null }> } | null };
 
 export type CreateUserDataMutationVariables = Exact<{
   input: CreateUserDataInput;
@@ -175,11 +249,6 @@ export type CreateUserDataMutationVariables = Exact<{
 
 
 export type CreateUserDataMutation = { __typename?: 'Mutation', createUserData?: { __typename?: 'UserData', userId: string } | null };
-
-export type GetActiveRoomsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetActiveRoomsQuery = { __typename?: 'Query', getRooms?: Array<{ __typename?: 'Room', hasPassword: boolean, id: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', id: string, iconUrl?: string | null }> } | null> | null };
 
 export type GetLoginUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -209,7 +278,7 @@ export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?:
 export const CreateRoomDocument = gql`
     mutation CreateRoom($input: CreateRoomInput!) {
   createRoom(input: $input) {
-    id
+    databaseId
     name
   }
 }
@@ -240,6 +309,89 @@ export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
 export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
 export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
+export const GetActiveRoomsDocument = gql`
+    query GetActiveRooms {
+  getRooms(input: {isActive: true}) {
+    hasPassword
+    databaseId
+    name
+    isActive
+    users {
+      databaseId
+      iconUrl
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActiveRoomsQuery__
+ *
+ * To run a query within a React component, call `useGetActiveRoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActiveRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActiveRoomsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActiveRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
+      }
+export function useGetActiveRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
+        }
+export type GetActiveRoomsQueryHookResult = ReturnType<typeof useGetActiveRoomsQuery>;
+export type GetActiveRoomsLazyQueryHookResult = ReturnType<typeof useGetActiveRoomsLazyQuery>;
+export type GetActiveRoomsQueryResult = Apollo.QueryResult<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>;
+export const GetRoomByDatabaseIdDocument = gql`
+    query GetRoomByDatabaseId($input: GetRoomInput!) {
+  getRoom(input: $input) {
+    hasPassword
+    databaseId
+    name
+    isActive
+    users {
+      databaseId
+      iconUrl
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRoomByDatabaseIdQuery__
+ *
+ * To run a query within a React component, call `useGetRoomByDatabaseIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomByDatabaseIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomByDatabaseIdQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetRoomByDatabaseIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>(GetRoomByDatabaseIdDocument, options);
+      }
+export function useGetRoomByDatabaseIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>(GetRoomByDatabaseIdDocument, options);
+        }
+export type GetRoomByDatabaseIdQueryHookResult = ReturnType<typeof useGetRoomByDatabaseIdQuery>;
+export type GetRoomByDatabaseIdLazyQueryHookResult = ReturnType<typeof useGetRoomByDatabaseIdLazyQuery>;
+export type GetRoomByDatabaseIdQueryResult = Apollo.QueryResult<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>;
 export const CreateUserDataDocument = gql`
     mutation CreateUserData($input: CreateUserDataInput!) {
   createUserData(input: $input) {
@@ -273,47 +425,6 @@ export function useCreateUserDataMutation(baseOptions?: Apollo.MutationHookOptio
 export type CreateUserDataMutationHookResult = ReturnType<typeof useCreateUserDataMutation>;
 export type CreateUserDataMutationResult = Apollo.MutationResult<CreateUserDataMutation>;
 export type CreateUserDataMutationOptions = Apollo.BaseMutationOptions<CreateUserDataMutation, CreateUserDataMutationVariables>;
-export const GetActiveRoomsDocument = gql`
-    query GetActiveRooms {
-  getRooms(input: {isActive: true}) {
-    hasPassword
-    id
-    name
-    isActive
-    users {
-      id
-      iconUrl
-    }
-  }
-}
-    `;
-
-/**
- * __useGetActiveRoomsQuery__
- *
- * To run a query within a React component, call `useGetActiveRoomsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetActiveRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetActiveRoomsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetActiveRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
-      }
-export function useGetActiveRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
-        }
-export type GetActiveRoomsQueryHookResult = ReturnType<typeof useGetActiveRoomsQuery>;
-export type GetActiveRoomsLazyQueryHookResult = ReturnType<typeof useGetActiveRoomsLazyQuery>;
-export type GetActiveRoomsQueryResult = Apollo.QueryResult<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>;
 export const GetLoginUserDocument = gql`
     query getLoginUser {
   loginUser {

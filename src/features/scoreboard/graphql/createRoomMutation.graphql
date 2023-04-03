@@ -1,6 +1,6 @@
 mutation CreateRoom($input: CreateRoomInput!) {
   createRoom(input: $input) {
-    id
+    databaseId
     name
   }
 }

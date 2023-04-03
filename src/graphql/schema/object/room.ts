@@ -11,6 +11,8 @@ export const roomObject = objectType({
     t.field(Room.isActive);
     t.field(Room.hashedPassword);
     t.field(Room.users);
+    t.field(Room.currentRule);
+    t.field(Room.ruleHistory);
     t.field(Room.createdAt);
     t.field(Room.updatedAt);
     t.nonNull.id('id', {

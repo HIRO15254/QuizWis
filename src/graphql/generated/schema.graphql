@@ -2,6 +2,30 @@
 ### Do not make changes to this file directly
 
 
+type Action implements Node {
+  """アクションの種類"""
+  actionType: String!
+
+  """アクションを行ったユーザー"""
+  actionUser: UserData!
+
+  """作成日時"""
+  createdAt: DateTime!
+
+  """データベース上のID"""
+  databaseId: ID!
+  id: ID!
+
+  """アクションが属するルール"""
+  rule: Rule!
+
+  """アクションを行った対象のユーザー"""
+  targetUser: UserData!
+
+  """更新日時"""
+  updatedAt: DateTime!
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -23,6 +47,10 @@ input CreateUserDataInput {
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+input GetRoomInput {
+  databaseId: String!
+}
 
 input GetRoomsInput {
   isActive: Boolean
@@ -51,6 +79,7 @@ interface Node {
 }
 
 type Query {
+  getRoom(input: GetRoomInput!): Room
   getRooms(input: GetRoomsInput!): [Room]
   getUserData(input: GetUserDataInput!): UserData
   loginUser: UserData
@@ -60,6 +89,9 @@ type Query {
 type Room implements Node {
   """作成日時"""
   createdAt: DateTime!
+
+  """現在実行中のルール"""
+  currentRule: Rule!
 
   """データベース上のID"""
   databaseId: ID!
@@ -75,16 +107,35 @@ type Room implements Node {
   """ルーム名"""
   name: String!
 
+  """ルールの履歴"""
+  ruleHistory: [Rule!]!
+
   """更新日時"""
   updatedAt: DateTime!
 
-  """解答者であるユーザー"""
+  """参加中のユーザー"""
   users: [UserData!]!
 }
 
 enum RoomRole {
   OWNER
   PLAYER
+}
+
+type Rule implements Node {
+  """このルール内で行われたアクション"""
+  actions: [Action!]!
+  createdAt: DateTime!
+  currentRoom: Room
+
+  """データベース上のID"""
+  databaseId: ID!
+  id: ID!
+  room: Room!
+  updatedAt: DateTime!
+
+  """このルールに参加しているユーザー"""
+  users: [UserData!]!
 }
 
 input UpdateUserDataInput {
@@ -99,8 +150,14 @@ input UpdateUserDataInput {
 
 """ユーザーの情報（実際に取得・変更する用）"""
 type UserData implements Node {
+  """ルーム内アクション関係リレーション"""
+  actions: [Action!]!
+
   """各ユーザーのプロフィールページの内容"""
   bio: String
+
+  """作成日時"""
+  createdAt: DateTime!
 
   """データベース上のID。基本使わない。"""
   databaseId: ID!
@@ -121,10 +178,17 @@ type UserData implements Node {
   """各ユーザーの表示名"""
   name: String!
 
-  """得点表示用ルームのID"""
+  """得点表示用ルーム"""
   room: Room
   roomId: String
   roomRole: RoomRole
+
+  """ルーム内での得点"""
+  rule: [Rule!]!
+  targetedActions: [Action!]!
+
+  """更新日時"""
+  updatedAt: DateTime!
 
   """各ユーザーが任意につけられるかつUniqueなID"""
   userId: String!

@@ -1,0 +1,12 @@
+query GetRoomByDatabaseId($input: GetRoomInput!) {
+  getRoom(input: $input) {
+    hasPassword
+    databaseId
+    name
+    isActive
+    users {
+      databaseId
+      iconUrl
+    }
+  }
+}

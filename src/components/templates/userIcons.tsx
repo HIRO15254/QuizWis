@@ -3,7 +3,7 @@ import React from 'react';
 
 export interface UserIconsProps {
   users: {
-    id: string;
+    databaseId: string;
     iconUrl?: string | null;
   }[];
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -16,7 +16,7 @@ const UserIcons = (props: UserIconsProps) => {
     <Avatar.Group spacing="sm">
       {users.map((user, index) => {
         if (index < max) {
-          return <Avatar key={user.id} src={user.iconUrl} size={size} />;
+          return <Avatar key={user.databaseId} src={user.iconUrl} size={size} />;
         } if (index === max) {
           const rest = `+${users.length - max}`;
           return (

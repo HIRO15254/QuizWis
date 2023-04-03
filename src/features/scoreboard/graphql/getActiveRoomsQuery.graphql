@@ -1,11 +1,11 @@
 query GetActiveRooms {
   getRooms(input: {isActive: true}) {
     hasPassword
-    id
+    databaseId
     name
     isActive
     users {
-      id
+      databaseId
       iconUrl
     }
   }

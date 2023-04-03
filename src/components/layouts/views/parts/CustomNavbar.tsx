@@ -73,7 +73,7 @@ const CustomNavbar = (props: CustomNavbarProps) => {
     { itemType: 'item', label: '設定', onClick: () => router.push('/user/settings') },
     { itemType: 'divider' },
     {
-      itemType: 'item', label: 'ダークモード', icon: isDarkTheme ? <IconCheck size="1rem" /> : undefined, onClick: () => switchDarkTheme,
+      itemType: 'item', label: 'ダークモード', icon: isDarkTheme ? <IconCheck size="1rem" /> : undefined, onClick: () => switchDarkTheme(),
     },
     { itemType: 'divider' },
     {

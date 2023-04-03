@@ -22,7 +22,7 @@ const RoomTablePhone = (props: RoomListProps) => {
         {rooms.map((room) => {
           if (!room) return null;
           return (
-            <tr key={room.id}>
+            <tr key={room.databaseId}>
               <td>
                 <Text>
                   {room.name}
@@ -44,7 +44,7 @@ const RoomTablePhone = (props: RoomListProps) => {
                 <ActionIcon
                   variant="outline"
                   color="blue"
-                  onClick={() => onRoomClick(room.id)}
+                  onClick={() => onRoomClick(room.databaseId)}
                 >
                   {room.hasPassword ? <IconLock size="1rem" /> : <IconDoorEnter size="1rem" />}
                 </ActionIcon>
