@@ -17,8 +17,8 @@ export const joinRoomMutation = mutationField('joinRoom', {
   },
   async resolve(_parent, { input }, ctx) {
     const hashedPassword = input.password ? await ctx.hash(input.password) : undefined;
-    return ctx.prisma.$transaction(async (prisma) => {
-      const target = await prisma.room.findUnique({
+    return ctx.prisma.$transaction(async () => {
+      const target = await ctx.prisma.room.findUnique({
         where: {
           databaseId: input.databaseId,
         },
@@ -35,7 +35,7 @@ export const joinRoomMutation = mutationField('joinRoom', {
       if (target.hashedPassword !== hashedPassword) {
         throw new Error('パスワードが違います');
       }
-      const ret = await prisma.room.update({
+      const ret = await ctx.prisma.room.update({
         where: {
           databaseId: input.databaseId,
         },

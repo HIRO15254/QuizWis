@@ -28,8 +28,6 @@ const MyApp: React.FC<AppProps> = ({
         </Head>
         <Page
           accessControl={pageProps.accessControl}
-          navbar={pageProps.navbar ?? true}
-          header={pageProps.header ?? true}
         >
           <Component {...pageProps} />
         </Page>
