@@ -1,8 +1,6 @@
 import { objectType } from 'nexus';
 import { UserData } from 'nexus-prisma';
 
-import { roomRole } from '../enum/roomRole';
-
 export const userDataObject = objectType({
   name: UserData.$name,
   description: UserData.$description,
@@ -19,9 +17,7 @@ export const userDataObject = objectType({
 
     t.field(UserData.room);
     t.field(UserData.roomId);
-    t.field(UserData.roomRole.name, { type: roomRole });
-
-    t.field(UserData.rule);
+    t.field(UserData.roomRole);
 
     t.field(UserData.actions);
     t.field(UserData.targetedActions);

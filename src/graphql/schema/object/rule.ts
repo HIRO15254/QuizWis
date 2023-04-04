@@ -7,10 +7,9 @@ export const ruleObject = objectType({
   definition(t) {
     t.implements('Node');
     t.field(Rule.databaseId);
-    t.field(Rule.users);
-    t.field(Rule.actions);
-    t.field(Rule.currentRoom);
-    t.field(Rule.room);
+    t.field(Rule.ruleType);
+    t.field(Rule.params);
+    t.field(Rule.rounds);
     t.field(Rule.createdAt);
     t.field(Rule.updatedAt);
     t.nonNull.id('id', {

@@ -1,3 +1,4 @@
+import { RuleType, RuleActionType } from '@prisma/client';
 import {
   mutationField, nonNull, arg, inputObjectType,
 } from 'nexus';
@@ -16,21 +17,43 @@ export const createRoomMutation = mutationField('createRoom', {
     input: nonNull(arg({ type: 'CreateRoomInput' })),
   },
   async resolve(_parent, { input }, ctx) {
-    if (!ctx.currentUserData) {
-      throw new Error('ログインしていません');
-    }
     const hashedPassword = input.password ? await ctx.hash(input.password) : undefined;
-    const ret = await ctx.prisma.room.create({
-      data: {
-        name: input.name,
-        hashedPassword,
-        users: {
-          connect: {
-            databaseId: ctx.currentUserData.databaseId,
+    return ctx.prisma.$transaction(async () => {
+      if (!ctx.currentUserData) {
+        throw new Error('ログインしていません');
+      }
+      const ret = await ctx.prisma.room.create({
+        data: {
+          name: input.name,
+          hashedPassword,
+          users: {
+            connect: {
+              databaseId: ctx.currentUserData.databaseId,
+            },
+          },
+          rules: {
+            create: {
+              ruleType: RuleType.FREE,
+              actions: {
+                create: {
+                  actionType: RuleActionType.JOIN,
+                  actionUser: {
+                    connect: {
+                      databaseId: ctx.currentUserData.databaseId,
+                    },
+                  },
+                  targetUser: {
+                    connect: {
+                      databaseId: ctx.currentUserData.databaseId,
+                    },
+                  },
+                },
+              },
+            },
           },
         },
-      },
+      });
+      return ret;
     });
-    return ret;
   },
 });

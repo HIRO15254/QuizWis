@@ -100,12 +100,9 @@ model UserData {
   /// ルーム内での役割
   roomRole RoomRole?
 
-  /// ルーム内での得点
-  rule Rule[]
-
   /// ルーム内アクション関係リレーション
-  actions         Action[] @relation("actionUser")
-  targetedActions Action[] @relation("targetUser")
+  actions         RoundAction[] @relation("actionUser")
+  targetedActions RoundAction[] @relation("targetUser")
 
   /// 作成日時
   createdAt DateTime @default(now())
@@ -120,21 +117,19 @@ enum RoomRole {
 
 model Room {
   /// データベース上のID
-  databaseId     String     @id @default(cuid()) @map("id")
+  databaseId     String  @id @default(cuid()) @map("id")
   /// ルーム名
   name           String
   /// ルームが有効かどうか（ルーム一覧に表示するかどうか）
-  isActive       Boolean    @default(true)
+  isActive       Boolean @default(true)
   /// 参加に必要なパスワード
   hashedPassword String?
-  /// 参加中のユーザー
-  users          UserData[]
 
-  /// 現在実行中のルール
-  currentRule   Rule   @relation("current", fields: [currentRuleId], references: [databaseId])
-  currentRuleId String @unique
+  /// 参加中のユーザー
+  users UserData[]
+
   /// ルールの履歴
-  ruleHistory   Rule[] @relation("history")
+  rounds Round[]
 
   /// 作成日時
   createdAt DateTime @default(now())
@@ -142,36 +137,74 @@ model Room {
   updatedAt DateTime @updatedAt
 }
 
-model Rule {
-  /// データベース上のID
-  databaseId String     @id @default(cuid()) @map("id")
-  /// このルールに参加しているユーザー
-  users      UserData[]
-  /// このルール内で行われたアクション
-  actions    Action[]
+enum RuleType {
+  FREE
+}
 
-  currentRoom Room?  @relation("current")
-  room        Room   @relation("history", fields: [roomId], references: [databaseId])
-  roomId      String
+model Round {
+  databaseId String @id @default(cuid()) @map("id")
+
+  rule   Rule   @relation(fields: [ruleId], references: [databaseId])
+  ruleId String
+
+  actions RoundAction[]
+
+  room      Room    @relation(fields: [roomId], references: [databaseId])
+  roomId    String
+  isCurrent Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Action {
+model Rule {
   /// データベース上のID
-  databaseId   String   @id @default(cuid()) @map("id")
+  databaseId String @id @default(cuid()) @map("id")
+
+  /// ルールの種別
+  ruleType RuleType
+  /// ルール上のパラメータ
+  params   Int[]
+
+  /// このルールが適用されたラウンド
+  rounds Round[]
+
+  /// 作成日時
+  createdAt DateTime @default(now())
+  /// 更新日時
+  updatedAt DateTime @updatedAt
+}
+
+enum RoundActionType {
+  JOIN
+  LEAVE
+  CORRECT
+  WRONG
+  THROUGH
+}
+
+model RoundAction {
+  /// データベース上のID
+  databaseId   String          @id @default(cuid()) @map("id")
   /// アクションが属するルール
-  rule         Rule     @relation(fields: [ruleId], references: [databaseId])
-  ruleId       String
+  round        Round           @relation(fields: [roundId], references: [databaseId])
+  roundId      String
   /// アクションを行ったユーザー
-  actionUser   UserData @relation("actionUser", fields: [actionUserId], references: [databaseId])
+  actionUser   UserData        @relation("actionUser", fields: [actionUserId], references: [databaseId])
   actionUserId String
   /// アクションを行った対象のユーザー
-  targetUser   UserData @relation("targetUser", fields: [targetUserId], references: [databaseId])
+  targetUser   UserData        @relation("targetUser", fields: [targetUserId], references: [databaseId])
   targetUserId String
   /// アクションの種類
-  actionType   String
+  actionType   RoundActionType
+
+  /// アンドゥリドゥ用
+  prevAction   RoundAction? @relation("prevAction", fields: [prevActionId], references: [databaseId])
+  prevActionId String?      @unique
+  /// アンドゥリドゥ用
+  nextAction   RoundAction? @relation("prevAction")
+  /// ここが最新のアクションかどうか
+  isCurrent    Boolean      @default(true)
 
   /// 作成日時
   createdAt DateTime @default(now())

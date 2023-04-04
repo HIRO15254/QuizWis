@@ -19,28 +19,6 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type Action = Node & {
-  __typename?: 'Action';
-  /** アクションの種類 */
-  actionType: Scalars['String'];
-  /** アクションを行ったユーザー */
-  actionUser: UserData;
-  actionUserId: Scalars['String'];
-  /** 作成日時 */
-  createdAt: Scalars['DateTime'];
-  /** データベース上のID */
-  databaseId: Scalars['ID'];
-  id: Scalars['ID'];
-  /** アクションが属するルール */
-  rule: Rule;
-  ruleId: Scalars['String'];
-  /** アクションを行った対象のユーザー */
-  targetUser: UserData;
-  targetUserId: Scalars['String'];
-  /** 更新日時 */
-  updatedAt: Scalars['DateTime'];
-};
-
 export type CreateRoomInput = {
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
@@ -137,9 +115,6 @@ export type Room = Node & {
   __typename?: 'Room';
   /** 作成日時 */
   createdAt: Scalars['DateTime'];
-  /** 現在実行中のルール */
-  currentRule: Rule;
-  currentRuleId: Scalars['String'];
   /** データベース上のID */
   databaseId: Scalars['ID'];
   hasPassword: Scalars['Boolean'];
@@ -151,7 +126,7 @@ export type Room = Node & {
   /** ルーム名 */
   name: Scalars['String'];
   /** ルールの履歴 */
-  ruleHistory: Array<Rule>;
+  rules: Array<Rule>;
   /** 更新日時 */
   updatedAt: Scalars['DateTime'];
   /** 参加中のユーザー */
@@ -166,18 +141,56 @@ export enum RoomRole {
 export type Rule = Node & {
   __typename?: 'Rule';
   /** このルール内で行われたアクション */
-  actions: Array<Action>;
+  actions: Array<RuleAction>;
+  /** 作成日時 */
   createdAt: Scalars['DateTime'];
-  currentRoom?: Maybe<Room>;
   /** データベース上のID */
   databaseId: Scalars['ID'];
   id: Scalars['ID'];
+  isCurrent: Scalars['Boolean'];
   room: Room;
-  roomDatabaseId: Scalars['String'];
+  /** ルール名 */
+  ruleType: RuleType;
+  /** 更新日時 */
   updatedAt: Scalars['DateTime'];
-  /** このルールに参加しているユーザー */
-  users: Array<UserData>;
 };
+
+export type RuleAction = Node & {
+  __typename?: 'RuleAction';
+  /** アクションの種類 */
+  actionType: RuleActionType;
+  /** アクションを行ったユーザー */
+  actionUser: UserData;
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
+  /** データベース上のID */
+  databaseId: Scalars['ID'];
+  id: Scalars['ID'];
+  /** ここが最新のアクションかどうか */
+  isCurrent: Scalars['Boolean'];
+  /** アンドゥリドゥ用 */
+  nextAction?: Maybe<RuleAction>;
+  /** アンドゥリドゥ用 */
+  prevAction?: Maybe<RuleAction>;
+  /** アクションが属するルール */
+  rule: Rule;
+  /** アクションを行った対象のユーザー */
+  targetUser: UserData;
+  /** 更新日時 */
+  updatedAt: Scalars['DateTime'];
+};
+
+export enum RuleActionType {
+  Correct = 'CORRECT',
+  Join = 'JOIN',
+  Leave = 'LEAVE',
+  Through = 'THROUGH',
+  Wrong = 'WRONG'
+}
+
+export enum RuleType {
+  Free = 'FREE'
+}
 
 export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
@@ -193,7 +206,7 @@ export type UpdateUserDataInput = {
 export type UserData = Node & {
   __typename?: 'UserData';
   /** ルーム内アクション関係リレーション */
-  actions: Array<Action>;
+  actions: Array<RuleAction>;
   /** 各ユーザーのプロフィールページの内容 */
   bio?: Maybe<Scalars['String']>;
   /** 作成日時 */
@@ -214,10 +227,9 @@ export type UserData = Node & {
   /** 得点表示用ルーム */
   room?: Maybe<Room>;
   roomId?: Maybe<Scalars['String']>;
+  /** ルーム内での役割 */
   roomRole?: Maybe<RoomRole>;
-  /** ルーム内での得点 */
-  rule: Array<Rule>;
-  targetedActions: Array<Action>;
+  targetedActions: Array<RuleAction>;
   /** 更新日時 */
   updatedAt: Scalars['DateTime'];
   /** 各ユーザーが任意につけられるかつUniqueなID */
