@@ -63,7 +63,14 @@ const CustomNavbar = (props: CustomNavbarProps) => {
         { label: 'ジャンル', link: '/' },
       ],
     },
-    { label: '得点表示', icon: IconLayoutKanban, link: '/scoreboard' },
+    {
+      label: '得点表示',
+      icon: IconLayoutKanban,
+      initiallyOpened: true,
+      links: [
+        { label: 'ルーム一覧', link: '/scoreboard' },
+      ],
+    },
   ];
   const links = navbarData.map((item) => <LinksGroup {...item} key={item.label} />);
 
@@ -82,7 +89,7 @@ const CustomNavbar = (props: CustomNavbarProps) => {
   ];
 
   return (
-    <Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 300 }} className={classes.navbar}>
+    <Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, md: 300 }} className={classes.navbar}>
       <Navbar.Section grow className={classes.links} component={ScrollArea}>
         <div>{links}</div>
       </Navbar.Section>

@@ -1,10 +1,15 @@
 import { Avatar } from '@mantine/core';
 import React from 'react';
 
+import { ScoreBoardRoomRole } from '../../graphql/generated/type';
+
 export interface UserIconsProps {
   users: {
-    databaseId: string;
-    iconUrl?: string | null;
+    role: ScoreBoardRoomRole
+    userData: {
+      databaseId: string;
+      iconUrl?: string | null;
+    }
   }[];
   size?: 'sm' | 'md' | 'lg' | 'xl';
   max?: number;
@@ -16,7 +21,7 @@ const UserIcons = (props: UserIconsProps) => {
     <Avatar.Group spacing="sm">
       {users.map((user, index) => {
         if (index < max) {
-          return <Avatar key={user.databaseId} src={user.iconUrl} size={size} />;
+          return <Avatar key={user.userData.databaseId} src={user.userData.iconUrl} size={size} />;
         } if (index === max) {
           const rest = `+${users.length - max}`;
           return (

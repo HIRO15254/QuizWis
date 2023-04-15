@@ -1,0 +1,6 @@
+mutation JoinScoreBoardRoom($input: JoinScoreBoardRoomInput!) {
+  joinScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}

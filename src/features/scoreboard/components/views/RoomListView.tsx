@@ -1,25 +1,39 @@
 import {
   Group, Paper, Title, Button, ActionIcon, LoadingOverlay,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { IconReload } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 
-import CreateRoomModal from './parts/CreateRoomModal';
-import { useGetActiveRoomsLazyQuery } from '../../../../graphql/generated/type';
+import { useGetScoreBoardRoomsLazyQuery } from '../../../../graphql/generated/type';
+import useNotification from '../../../../hooks/useNotification';
+import useCreateScoreBoardRoom from '../../hooks/useCreateScoreBoardRoom';
+import useJoinScoreBoardRoom from '../../hooks/useJoinScoreBoardRoom';
+import useLeaveScoreBoardRoom from '../../hooks/useLeaveScoreBoardRoom';
 import RoomList from '../templates/RoomList';
 
 const RoomListView = () => {
-  const [getActiveRooms, { data: activeRooms, loading }] = useGetActiveRoomsLazyQuery();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [getActiveRooms, { data: activeRooms, loading }] = useGetScoreBoardRoomsLazyQuery({ fetchPolicy: 'cache-and-network' });
+  const [
+    CreateScoreBoardRoomModal, { open: createScoreBoardRoom },
+  ] = useCreateScoreBoardRoom();
+  const [
+    LeaveScoreBoardRoomModal, { open: leaveScoreBoardRoom },
+  ] = useLeaveScoreBoardRoom({ onClose: getActiveRooms });
+  const [
+    JoinRoomWithPasswordModal, { open: joinScoreBoardRoom },
+  ] = useJoinScoreBoardRoom();
+
+  const { errorNotification } = useNotification();
   const router = useRouter();
 
   useEffect(() => {
-    getActiveRooms();
+    getActiveRooms().catch((e) => {
+      errorNotification(e);
+    });
   }, []);
 
-  const onRoomClick = (roomId: string) => {
+  const onMoveButtonClick = (roomId: string) => {
     router.push(`/scoreboard/${roomId}`);
   };
 
@@ -27,6 +41,9 @@ const RoomListView = () => {
     <Group position="center" pb="sm">
       <Paper w="100%" maw={800} p="md">
         <LoadingOverlay visible={loading} />
+        <CreateScoreBoardRoomModal />
+        <LeaveScoreBoardRoomModal />
+        <JoinRoomWithPasswordModal />
         <Group position="apart" pb="sm">
           <Title order={3}>
             ルーム一覧
@@ -35,15 +52,16 @@ const RoomListView = () => {
             <ActionIcon onClick={() => getActiveRooms()} size="lg" variant="outline">
               <IconReload />
             </ActionIcon>
-            <Button onClick={open}>
+            <Button onClick={createScoreBoardRoom}>
               ルームを作成
             </Button>
           </Group>
         </Group>
-        <CreateRoomModal opened={opened} onClose={close} />
         <RoomList
-          rooms={activeRooms?.getRooms ?? []}
-          onRoomClick={onRoomClick}
+          rooms={activeRooms?.getScoreBoardRooms ?? []}
+          onJoinButtonClick={(roomId) => joinScoreBoardRoom(roomId)}
+          onMoveButtonClick={onMoveButtonClick}
+          onLeaveButtonClick={(roomId) => leaveScoreBoardRoom(roomId)}
         />
       </Paper>
     </Group>

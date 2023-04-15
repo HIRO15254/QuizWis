@@ -19,7 +19,7 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type CreateRoomInput = {
+export type CreateScoreBoardRoomInput = {
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
 };
@@ -31,36 +31,42 @@ export type CreateUserDataInput = {
   userId: Scalars['String'];
 };
 
-export type GetRoomInput = {
+export type GetScoreBoardRoomInput = {
   databaseId: Scalars['String'];
 };
 
-export type GetRoomsInput = {
-  isActive?: InputMaybe<Scalars['Boolean']>;
+export type GetScoreBoardRoomsInput = {
+  dummy?: InputMaybe<Scalars['String']>;
 };
 
 export type GetUserDataInput = {
   userId: Scalars['String'];
 };
 
-export type JoinRoomInput = {
+export type JoinScoreBoardRoomInput = {
   databaseId: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
 };
 
+export type LeaveScoreBoardRoomInput = {
+  databaseId: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createRoom?: Maybe<Room>;
+  /** 得点表示ルームを作成しオーナーになる */
+  createScoreBoardRoom?: Maybe<ScoreBoardRoom>;
   createUserData?: Maybe<UserData>;
-  joinRoom?: Maybe<Room>;
-  leaveRoom?: Maybe<Room>;
+  joinScoreBoardRoom?: Maybe<ScoreBoardRoom>;
+  /** 得点表示ルームから退出する */
+  leaveScoreBoardRoom?: Maybe<ScoreBoardRoom>;
   switchDarkTheme?: Maybe<UserData>;
   updateUserData?: Maybe<UserData>;
 };
 
 
-export type MutationCreateRoomArgs = {
-  input: CreateRoomInput;
+export type MutationCreateScoreBoardRoomArgs = {
+  input: CreateScoreBoardRoomInput;
 };
 
 
@@ -69,8 +75,13 @@ export type MutationCreateUserDataArgs = {
 };
 
 
-export type MutationJoinRoomArgs = {
-  input: JoinRoomInput;
+export type MutationJoinScoreBoardRoomArgs = {
+  input: JoinScoreBoardRoomInput;
+};
+
+
+export type MutationLeaveScoreBoardRoomArgs = {
+  input: LeaveScoreBoardRoomInput;
 };
 
 
@@ -84,21 +95,22 @@ export type Node = {
 
 export type Query = {
   __typename?: 'Query';
-  getRoom?: Maybe<Room>;
-  getRooms?: Maybe<Array<Maybe<Room>>>;
+  getScoreBoardRoom?: Maybe<ScoreBoardRoom>;
+  /** 得点表示ルーム一覧を取得する */
+  getScoreBoardRooms?: Maybe<Array<Maybe<ScoreBoardRoom>>>;
   getUserData?: Maybe<UserData>;
   loginUser?: Maybe<UserData>;
   node?: Maybe<Node>;
 };
 
 
-export type QueryGetRoomArgs = {
-  input: GetRoomInput;
+export type QueryGetScoreBoardRoomArgs = {
+  input: GetScoreBoardRoomInput;
 };
 
 
-export type QueryGetRoomsArgs = {
-  input: GetRoomsInput;
+export type QueryGetScoreBoardRoomsArgs = {
+  input?: InputMaybe<GetScoreBoardRoomsInput>;
 };
 
 
@@ -111,85 +123,30 @@ export type QueryNodeArgs = {
   id: Scalars['String'];
 };
 
-export type Room = Node & {
-  __typename?: 'Room';
+/** 現在開かれている得点表示ルームのデータ */
+export type ScoreBoardRoom = Node & {
+  __typename?: 'ScoreBoardRoom';
   /** 作成日時 */
   createdAt: Scalars['DateTime'];
   /** データベース上のID */
   databaseId: Scalars['ID'];
+  /** パスワードがかかっているか */
   hasPassword: Scalars['Boolean'];
   /** 参加に必要なパスワード */
   hashedPassword?: Maybe<Scalars['String']>;
+  /** relay仕様のID */
   id: Scalars['ID'];
-  /** ルームが有効かどうか（ルーム一覧に表示するかどうか） */
-  isActive: Scalars['Boolean'];
   /** ルーム名 */
   name: Scalars['String'];
-  /** ルールの履歴 */
-  rules: Array<Rule>;
-  /** 更新日時 */
+  /** 最終更新日時 */
   updatedAt: Scalars['DateTime'];
-  /** 参加中のユーザー */
-  users: Array<UserData>;
+  /** 参加中のユーザー(との中間テーブル) */
+  users: Array<User_ScoreBoardRoom>;
 };
 
-export enum RoomRole {
-  Owner = 'OWNER',
-  Player = 'PLAYER'
-}
-
-export type Rule = Node & {
-  __typename?: 'Rule';
-  /** このルール内で行われたアクション */
-  actions: Array<RuleAction>;
-  /** 作成日時 */
-  createdAt: Scalars['DateTime'];
-  /** データベース上のID */
-  databaseId: Scalars['ID'];
-  id: Scalars['ID'];
-  isCurrent: Scalars['Boolean'];
-  room: Room;
-  /** ルール名 */
-  ruleType: RuleType;
-  /** 更新日時 */
-  updatedAt: Scalars['DateTime'];
-};
-
-export type RuleAction = Node & {
-  __typename?: 'RuleAction';
-  /** アクションの種類 */
-  actionType: RuleActionType;
-  /** アクションを行ったユーザー */
-  actionUser: UserData;
-  /** 作成日時 */
-  createdAt: Scalars['DateTime'];
-  /** データベース上のID */
-  databaseId: Scalars['ID'];
-  id: Scalars['ID'];
-  /** ここが最新のアクションかどうか */
-  isCurrent: Scalars['Boolean'];
-  /** アンドゥリドゥ用 */
-  nextAction?: Maybe<RuleAction>;
-  /** アンドゥリドゥ用 */
-  prevAction?: Maybe<RuleAction>;
-  /** アクションが属するルール */
-  rule: Rule;
-  /** アクションを行った対象のユーザー */
-  targetUser: UserData;
-  /** 更新日時 */
-  updatedAt: Scalars['DateTime'];
-};
-
-export enum RuleActionType {
-  Correct = 'CORRECT',
-  Join = 'JOIN',
-  Leave = 'LEAVE',
-  Through = 'THROUGH',
-  Wrong = 'WRONG'
-}
-
-export enum RuleType {
-  Free = 'FREE'
+export enum ScoreBoardRoomRole {
+  Member = 'MEMBER',
+  Owner = 'OWNER'
 }
 
 export type UpdateUserDataInput = {
@@ -202,58 +159,76 @@ export type UpdateUserDataInput = {
   userId: Scalars['String'];
 };
 
-/** ユーザーの情報（実際に取得・変更する用） */
+/** ユーザーの情報 */
 export type UserData = Node & {
   __typename?: 'UserData';
-  /** ルーム内アクション関係リレーション */
-  actions: Array<RuleAction>;
   /** 各ユーザーのプロフィールページの内容 */
   bio?: Maybe<Scalars['String']>;
-  /** 作成日時 */
-  createdAt: Scalars['DateTime'];
-  /** データベース上のID。基本使わない。 */
+  /** データベース上のID */
   databaseId: Scalars['ID'];
   /** 各ユーザーemailアドレス */
   email?: Maybe<Scalars['String']>;
   /** ユーザーのアイコン画像のURL */
   iconUrl?: Maybe<Scalars['String']>;
+  /** relay仕様のID */
   id: Scalars['ID'];
-  /** Admin権限の有無\nクライアント側からの変更禁止 */
+  /** Admin権限の有無 (変更禁止) */
   isAdmin: Scalars['Boolean'];
   /** ダークテーマ設定 */
   isDarkTheme: Scalars['Boolean'];
   /** 各ユーザーの表示名 */
   name: Scalars['String'];
-  /** 得点表示用ルーム */
-  room?: Maybe<Room>;
-  roomId?: Maybe<Scalars['String']>;
-  /** ルーム内での役割 */
-  roomRole?: Maybe<RoomRole>;
-  targetedActions: Array<RuleAction>;
-  /** 更新日時 */
-  updatedAt: Scalars['DateTime'];
+  /** 参加中のルーム情報 */
+  scoreBoardRooms: Array<User_ScoreBoardRoom>;
   /** 各ユーザーが任意につけられるかつUniqueなID */
   userId: Scalars['String'];
 };
 
-export type CreateRoomMutationVariables = Exact<{
-  input: CreateRoomInput;
+/** ユーザーと得点表示ルームの中間テーブル */
+export type User_ScoreBoardRoom = {
+  __typename?: 'User_ScoreBoardRoom';
+  /** ユーザーの得点表示ルーム内での権限 */
+  role: ScoreBoardRoomRole;
+  scoreBoardRoom: ScoreBoardRoom;
+  scoreBoardRoomId: Scalars['String'];
+  userData: UserData;
+  userDataId: Scalars['String'];
+};
+
+export type CreateScoreBoardRoomMutationVariables = Exact<{
+  input: CreateScoreBoardRoomInput;
 }>;
 
 
-export type CreateRoomMutation = { __typename?: 'Mutation', createRoom?: { __typename?: 'Room', databaseId: string, name: string } | null };
+export type CreateScoreBoardRoomMutation = { __typename?: 'Mutation', createScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
 
-export type GetActiveRoomsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetActiveRoomsQuery = { __typename?: 'Query', getRooms?: Array<{ __typename?: 'Room', hasPassword: boolean, databaseId: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', databaseId: string, iconUrl?: string | null }> } | null> | null };
-
-export type GetRoomByDatabaseIdQueryVariables = Exact<{
-  input: GetRoomInput;
+export type GetScoreBoardRoomsQueryVariables = Exact<{
+  input?: InputMaybe<GetScoreBoardRoomsInput>;
 }>;
 
 
-export type GetRoomByDatabaseIdQuery = { __typename?: 'Query', getRoom?: { __typename?: 'Room', hasPassword: boolean, databaseId: string, name: string, isActive: boolean, users: Array<{ __typename?: 'UserData', databaseId: string, iconUrl?: string | null }> } | null };
+export type GetScoreBoardRoomsQuery = { __typename?: 'Query', getScoreBoardRooms?: Array<{ __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean, name: string, users: Array<{ __typename?: 'User_ScoreBoardRoom', role: ScoreBoardRoomRole, userData: { __typename?: 'UserData', id: string, iconUrl?: string | null, userId: string, databaseId: string } }> } | null> | null };
+
+export type LeaveScoreBoardRoomMutationVariables = Exact<{
+  input: LeaveScoreBoardRoomInput;
+}>;
+
+
+export type LeaveScoreBoardRoomMutation = { __typename?: 'Mutation', leaveScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
+
+export type GetScoreBoardRoomHasPasswordQueryVariables = Exact<{
+  input: GetScoreBoardRoomInput;
+}>;
+
+
+export type GetScoreBoardRoomHasPasswordQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean } | null };
+
+export type JoinScoreBoardRoomMutationVariables = Exact<{
+  input: JoinScoreBoardRoomInput;
+}>;
+
+
+export type JoinScoreBoardRoomMutation = { __typename?: 'Mutation', joinScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
 
 export type CreateUserDataMutationVariables = Exact<{
   input: CreateUserDataInput;
@@ -287,123 +262,193 @@ export type UpdateUserDataMutationVariables = Exact<{
 export type UpdateUserDataMutation = { __typename?: 'Mutation', updateUserData?: { __typename?: 'UserData', userId: string, email?: string | null, name: string, bio?: string | null, iconUrl?: string | null, isDarkTheme: boolean } | null };
 
 
-export const CreateRoomDocument = gql`
-    mutation CreateRoom($input: CreateRoomInput!) {
-  createRoom(input: $input) {
+export const CreateScoreBoardRoomDocument = gql`
+    mutation CreateScoreBoardRoom($input: CreateScoreBoardRoomInput!) {
+  createScoreBoardRoom(input: $input) {
+    id
     databaseId
     name
   }
 }
     `;
-export type CreateRoomMutationFn = Apollo.MutationFunction<CreateRoomMutation, CreateRoomMutationVariables>;
+export type CreateScoreBoardRoomMutationFn = Apollo.MutationFunction<CreateScoreBoardRoomMutation, CreateScoreBoardRoomMutationVariables>;
 
 /**
- * __useCreateRoomMutation__
+ * __useCreateScoreBoardRoomMutation__
  *
- * To run a mutation, you first call `useCreateRoomMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateRoomMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCreateScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateScoreBoardRoomMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createRoomMutation, { data, loading, error }] = useCreateRoomMutation({
+ * const [createScoreBoardRoomMutation, { data, loading, error }] = useCreateScoreBoardRoomMutation({
  *   variables: {
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateRoomMutation, CreateRoomMutationVariables>) {
+export function useCreateScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateScoreBoardRoomMutation, CreateScoreBoardRoomMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, options);
+        return Apollo.useMutation<CreateScoreBoardRoomMutation, CreateScoreBoardRoomMutationVariables>(CreateScoreBoardRoomDocument, options);
       }
-export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
-export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
-export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
-export const GetActiveRoomsDocument = gql`
-    query GetActiveRooms {
-  getRooms(input: {isActive: true}) {
-    hasPassword
+export type CreateScoreBoardRoomMutationHookResult = ReturnType<typeof useCreateScoreBoardRoomMutation>;
+export type CreateScoreBoardRoomMutationResult = Apollo.MutationResult<CreateScoreBoardRoomMutation>;
+export type CreateScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<CreateScoreBoardRoomMutation, CreateScoreBoardRoomMutationVariables>;
+export const GetScoreBoardRoomsDocument = gql`
+    query GetScoreBoardRooms($input: GetScoreBoardRoomsInput) {
+  getScoreBoardRooms(input: $input) {
+    id
     databaseId
+    hasPassword
     name
-    isActive
     users {
-      databaseId
-      iconUrl
+      role
+      userData {
+        id
+        iconUrl
+        userId
+        databaseId
+      }
     }
   }
 }
     `;
 
 /**
- * __useGetActiveRoomsQuery__
+ * __useGetScoreBoardRoomsQuery__
  *
- * To run a query within a React component, call `useGetActiveRoomsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetActiveRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetScoreBoardRoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScoreBoardRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetActiveRoomsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetActiveRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
-      }
-export function useGetActiveRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>(GetActiveRoomsDocument, options);
-        }
-export type GetActiveRoomsQueryHookResult = ReturnType<typeof useGetActiveRoomsQuery>;
-export type GetActiveRoomsLazyQueryHookResult = ReturnType<typeof useGetActiveRoomsLazyQuery>;
-export type GetActiveRoomsQueryResult = Apollo.QueryResult<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>;
-export const GetRoomByDatabaseIdDocument = gql`
-    query GetRoomByDatabaseId($input: GetRoomInput!) {
-  getRoom(input: $input) {
-    hasPassword
-    databaseId
-    name
-    isActive
-    users {
-      databaseId
-      iconUrl
-    }
-  }
-}
-    `;
-
-/**
- * __useGetRoomByDatabaseIdQuery__
- *
- * To run a query within a React component, call `useGetRoomByDatabaseIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRoomByDatabaseIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetRoomByDatabaseIdQuery({
+ * const { data, loading, error } = useGetScoreBoardRoomsQuery({
  *   variables: {
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useGetRoomByDatabaseIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>) {
+export function useGetScoreBoardRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>(GetRoomByDatabaseIdDocument, options);
+        return Apollo.useQuery<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>(GetScoreBoardRoomsDocument, options);
       }
-export function useGetRoomByDatabaseIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>) {
+export function useGetScoreBoardRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>(GetRoomByDatabaseIdDocument, options);
+          return Apollo.useLazyQuery<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>(GetScoreBoardRoomsDocument, options);
         }
-export type GetRoomByDatabaseIdQueryHookResult = ReturnType<typeof useGetRoomByDatabaseIdQuery>;
-export type GetRoomByDatabaseIdLazyQueryHookResult = ReturnType<typeof useGetRoomByDatabaseIdLazyQuery>;
-export type GetRoomByDatabaseIdQueryResult = Apollo.QueryResult<GetRoomByDatabaseIdQuery, GetRoomByDatabaseIdQueryVariables>;
+export type GetScoreBoardRoomsQueryHookResult = ReturnType<typeof useGetScoreBoardRoomsQuery>;
+export type GetScoreBoardRoomsLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomsLazyQuery>;
+export type GetScoreBoardRoomsQueryResult = Apollo.QueryResult<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>;
+export const LeaveScoreBoardRoomDocument = gql`
+    mutation LeaveScoreBoardRoom($input: LeaveScoreBoardRoomInput!) {
+  leaveScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}
+    `;
+export type LeaveScoreBoardRoomMutationFn = Apollo.MutationFunction<LeaveScoreBoardRoomMutation, LeaveScoreBoardRoomMutationVariables>;
+
+/**
+ * __useLeaveScoreBoardRoomMutation__
+ *
+ * To run a mutation, you first call `useLeaveScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLeaveScoreBoardRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [leaveScoreBoardRoomMutation, { data, loading, error }] = useLeaveScoreBoardRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useLeaveScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<LeaveScoreBoardRoomMutation, LeaveScoreBoardRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LeaveScoreBoardRoomMutation, LeaveScoreBoardRoomMutationVariables>(LeaveScoreBoardRoomDocument, options);
+      }
+export type LeaveScoreBoardRoomMutationHookResult = ReturnType<typeof useLeaveScoreBoardRoomMutation>;
+export type LeaveScoreBoardRoomMutationResult = Apollo.MutationResult<LeaveScoreBoardRoomMutation>;
+export type LeaveScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<LeaveScoreBoardRoomMutation, LeaveScoreBoardRoomMutationVariables>;
+export const GetScoreBoardRoomHasPasswordDocument = gql`
+    query GetScoreBoardRoomHasPassword($input: GetScoreBoardRoomInput!) {
+  getScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    hasPassword
+  }
+}
+    `;
+
+/**
+ * __useGetScoreBoardRoomHasPasswordQuery__
+ *
+ * To run a query within a React component, call `useGetScoreBoardRoomHasPasswordQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScoreBoardRoomHasPasswordQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScoreBoardRoomHasPasswordQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetScoreBoardRoomHasPasswordQuery(baseOptions: Apollo.QueryHookOptions<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>(GetScoreBoardRoomHasPasswordDocument, options);
+      }
+export function useGetScoreBoardRoomHasPasswordLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>(GetScoreBoardRoomHasPasswordDocument, options);
+        }
+export type GetScoreBoardRoomHasPasswordQueryHookResult = ReturnType<typeof useGetScoreBoardRoomHasPasswordQuery>;
+export type GetScoreBoardRoomHasPasswordLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomHasPasswordLazyQuery>;
+export type GetScoreBoardRoomHasPasswordQueryResult = Apollo.QueryResult<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>;
+export const JoinScoreBoardRoomDocument = gql`
+    mutation JoinScoreBoardRoom($input: JoinScoreBoardRoomInput!) {
+  joinScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}
+    `;
+export type JoinScoreBoardRoomMutationFn = Apollo.MutationFunction<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
+
+/**
+ * __useJoinScoreBoardRoomMutation__
+ *
+ * To run a mutation, you first call `useJoinScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinScoreBoardRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinScoreBoardRoomMutation, { data, loading, error }] = useJoinScoreBoardRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useJoinScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>(JoinScoreBoardRoomDocument, options);
+      }
+export type JoinScoreBoardRoomMutationHookResult = ReturnType<typeof useJoinScoreBoardRoomMutation>;
+export type JoinScoreBoardRoomMutationResult = Apollo.MutationResult<JoinScoreBoardRoomMutation>;
+export type JoinScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
 export const CreateUserDataDocument = gql`
     mutation CreateUserData($input: CreateUserDataInput!) {
   createUserData(input: $input) {

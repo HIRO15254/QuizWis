@@ -5,6 +5,12 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import { prisma } from '../../../lib/prisma';
 
+const createUserID = () => {
+  const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const length = 8;
+  return [...Array(length)].map(() => c[Math.floor(Math.random() * c.length)]).join('');
+};
+
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -41,6 +47,22 @@ export const authOptions: AuthOptions = {
         isDarkTheme: userDataValue?.isDarkTheme ?? false,
       };
       return session;
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      const userId = createUserID();
+      await prisma.userData.create({
+        data: {
+          userId,
+          name: user.name ?? `user_${userId}`,
+          authUser: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
     },
   },
   useSecureCookies: process.env.NODE_ENV === 'production',

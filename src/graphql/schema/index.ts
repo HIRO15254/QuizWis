@@ -1,5 +1,3 @@
-export * from './object';
-export * from './query';
-export * from './mutation';
-export * from './interface';
-export * from './enum';
+export * from './common';
+export * from './scoreBoard';
+// export * from './enum';

@@ -72,7 +72,6 @@ const LinksGroup = ({
       className={classes.link}
       href={mappedLink.link}
       key={mappedLink.label}
-      onClick={(event) => event.preventDefault()}
     >
       {mappedLink.label}
     </Text>

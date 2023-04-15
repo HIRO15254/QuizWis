@@ -7,7 +7,7 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-input CreateRoomInput {
+input CreateScoreBoardRoomInput {
   name: String!
   password: String
 }
@@ -24,28 +24,35 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-input GetRoomInput {
+input GetScoreBoardRoomInput {
   databaseId: String!
 }
 
-input GetRoomsInput {
-  isActive: Boolean
+input GetScoreBoardRoomsInput {
+  dummy: String
 }
 
 input GetUserDataInput {
   userId: String!
 }
 
-input JoinRoomInput {
+input JoinScoreBoardRoomInput {
   databaseId: String!
   password: String
 }
 
+input LeaveScoreBoardRoomInput {
+  databaseId: String!
+}
+
 type Mutation {
-  createRoom(input: CreateRoomInput!): Room
+  """得点表示ルームを作成しオーナーになる"""
+  createScoreBoardRoom(input: CreateScoreBoardRoomInput!): ScoreBoardRoom
   createUserData(input: CreateUserDataInput!): UserData
-  joinRoom(input: JoinRoomInput!): Room
-  leaveRoom: Room
+  joinScoreBoardRoom(input: JoinScoreBoardRoomInput!): ScoreBoardRoom
+
+  """得点表示ルームから退出する"""
+  leaveScoreBoardRoom(input: LeaveScoreBoardRoomInput!): ScoreBoardRoom
   switchDarkTheme: UserData
   updateUserData(input: UpdateUserDataInput!): UserData
 }
@@ -55,121 +62,45 @@ interface Node {
 }
 
 type Query {
-  getRoom(input: GetRoomInput!): Room
-  getRooms(input: GetRoomsInput!): [Room]
+  getScoreBoardRoom(input: GetScoreBoardRoomInput!): ScoreBoardRoom
+
+  """得点表示ルーム一覧を取得する"""
+  getScoreBoardRooms(input: GetScoreBoardRoomsInput): [ScoreBoardRoom]
   getUserData(input: GetUserDataInput!): UserData
   loginUser: UserData
   node(id: String!): Node
 }
 
-type Room implements Node {
+"""現在開かれている得点表示ルームのデータ"""
+type ScoreBoardRoom implements Node {
   """作成日時"""
   createdAt: DateTime!
 
   """データベース上のID"""
   databaseId: ID!
+
+  """パスワードがかかっているか"""
   hasPassword: Boolean!
 
   """参加に必要なパスワード"""
   hashedPassword: String
-  id: ID!
 
-  """ルームが有効かどうか（ルーム一覧に表示するかどうか）"""
-  isActive: Boolean!
+  """relay仕様のID"""
+  id: ID!
 
   """ルーム名"""
   name: String!
 
-  """ルールの履歴"""
-  rounds: [Round!]!
-
-  """更新日時"""
+  """最終更新日時"""
   updatedAt: DateTime!
 
-  """参加中のユーザー"""
-  users: [UserData!]!
+  """参加中のユーザー(との中間テーブル)"""
+  users: [User_ScoreBoardRoom!]!
 }
 
-enum RoomRole {
+enum ScoreBoardRoomRole {
+  MEMBER
   OWNER
-  PLAYER
-}
-
-type Round implements Node {
-  actions: [RoundAction!]!
-  createdAt: DateTime!
-  databaseId: ID!
-  id: ID!
-  isCurrent: Boolean!
-  room: Room!
-  rule: Rule!
-  updatedAt: DateTime!
-}
-
-type RoundAction implements Node {
-  """アクションの種類"""
-  actionType: RoundActionType!
-
-  """アクションを行ったユーザー"""
-  actionUser: UserData!
-
-  """作成日時"""
-  createdAt: DateTime!
-
-  """データベース上のID"""
-  databaseId: ID!
-  id: ID!
-
-  """ここが最新のアクションかどうか"""
-  isCurrent: Boolean!
-
-  """アンドゥリドゥ用"""
-  nextAction: RoundAction
-
-  """アンドゥリドゥ用"""
-  prevAction: RoundAction
-
-  """アクションが属するルール"""
-  round: Round!
-
-  """アクションを行った対象のユーザー"""
-  targetUser: UserData!
-
-  """更新日時"""
-  updatedAt: DateTime!
-}
-
-enum RoundActionType {
-  CORRECT
-  JOIN
-  LEAVE
-  THROUGH
-  WRONG
-}
-
-type Rule implements Node {
-  """作成日時"""
-  createdAt: DateTime!
-
-  """データベース上のID"""
-  databaseId: ID!
-  id: ID!
-
-  """ルール上のパラメータ"""
-  params: [Int!]!
-
-  """このルールが適用されたラウンド"""
-  rounds: [Round!]!
-
-  """ルールの種別"""
-  ruleType: RuleType!
-
-  """更新日時"""
-  updatedAt: DateTime!
-}
-
-enum RuleType {
-  FREE
 }
 
 input UpdateUserDataInput {
@@ -182,18 +113,12 @@ input UpdateUserDataInput {
   userId: String!
 }
 
-"""ユーザーの情報（実際に取得・変更する用）"""
+"""ユーザーの情報"""
 type UserData implements Node {
-  """ルーム内アクション関係リレーション"""
-  actions: [RoundAction!]!
-
   """各ユーザーのプロフィールページの内容"""
   bio: String
 
-  """作成日時"""
-  createdAt: DateTime!
-
-  """データベース上のID。基本使わない。"""
+  """データベース上のID"""
   databaseId: ID!
 
   """各ユーザーemailアドレス"""
@@ -201,9 +126,11 @@ type UserData implements Node {
 
   """ユーザーのアイコン画像のURL"""
   iconUrl: String
+
+  """relay仕様のID"""
   id: ID!
 
-  """Admin権限の有無\nクライアント側からの変更禁止"""
+  """Admin権限の有無 (変更禁止)"""
   isAdmin: Boolean!
 
   """ダークテーマ設定"""
@@ -212,17 +139,19 @@ type UserData implements Node {
   """各ユーザーの表示名"""
   name: String!
 
-  """得点表示用ルーム"""
-  room: Room
-  roomId: String
-
-  """ルーム内での役割"""
-  roomRole: RoomRole
-  targetedActions: [RoundAction!]!
-
-  """更新日時"""
-  updatedAt: DateTime!
+  """参加中のルーム情報"""
+  scoreBoardRooms: [User_ScoreBoardRoom!]!
 
   """各ユーザーが任意につけられるかつUniqueなID"""
   userId: String!
+}
+
+"""ユーザーと得点表示ルームの中間テーブル"""
+type User_ScoreBoardRoom {
+  """ユーザーの得点表示ルーム内での権限"""
+  role: ScoreBoardRoomRole!
+  scoreBoardRoom: ScoreBoardRoom!
+  scoreBoardRoomId: String!
+  userData: UserData!
+  userDataId: String!
 }

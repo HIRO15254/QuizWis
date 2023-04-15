@@ -3,19 +3,19 @@ import {
 } from '@mantine/core';
 import React from 'react';
 
-import RoomTablePC, { RoomListProps } from './RoomTablePC';
-import RoomTablePhone from './RoomTablePhone';
+import RoomListPC, { RoomListProps } from './RoomListPC';
+import RoomListPhone from './RoomListPhone';
 
 const RoomList = (props: RoomListProps) => (
   <>
     <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
       <div>
-        <RoomTablePC {...props} />
+        <RoomListPC {...props} />
       </div>
     </MediaQuery>
     <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
       <div>
-        <RoomTablePhone {...props} />
+        <RoomListPhone {...props} />
       </div>
     </MediaQuery>
   </>

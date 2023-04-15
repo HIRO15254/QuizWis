@@ -1,0 +1,7 @@
+query GetScoreBoardRoomHasPassword($input: GetScoreBoardRoomInput!) {
+  getScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    hasPassword
+  }
+}

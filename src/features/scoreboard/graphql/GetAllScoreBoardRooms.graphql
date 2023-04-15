@@ -1,0 +1,17 @@
+query GetScoreBoardRooms($input: GetScoreBoardRoomsInput) {
+  getScoreBoardRooms(input: $input) {
+    id
+    databaseId
+    hasPassword
+    name
+    users {
+      role
+      userData {
+        id
+        iconUrl
+        userId
+        databaseId
+      }
+    }
+  }
+}

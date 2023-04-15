@@ -14,8 +14,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//* 以下、nextauth用のデータ構造(基本取得・変更はしない)
 /// ユーザー登録等に使用されたアカウントそれぞれに紐づく情報
-/// 基本取得・変更はしない方針
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -35,7 +35,6 @@ model Account {
 }
 
 /// 認証時に使用されるセッション情報
-/// 基本取得・変更はしない
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -45,7 +44,6 @@ model Session {
 }
 
 /// 各ユーザーの情報
-/// 基本取得・変更はしない
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -55,12 +53,11 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  userDataId String?   @unique
   userData   UserData? @relation(fields: [userDataId], references: [databaseId])
+  userDataId String?   @unique
 }
 
 /// 認証用トークン
-/// 基本取得・変更はしない
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -69,10 +66,21 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-/// ユーザーの情報（実際に取得・変更する用）
+//* 以下、アプリ用データ
+/// ユーザーの情報
 model UserData {
-  /// データベース上のID。基本使わない。
-  databaseId  String  @id @default(cuid()) @map("id")
+  /// nextauth用データ構造と紐づける用。公開・変更しない
+  authUser User?
+
+  //* メタデータ
+  /// データベース上のID
+  databaseId String   @id @default(cuid()) @map("id")
+  /// 作成日時
+  createdAt  DateTime @default(now())
+  /// 最終更新日時
+  updatedAt  DateTime @updatedAt
+
+  //* 基本データ
   /// 各ユーザーが任意につけられるかつUniqueなID
   userId      String  @unique
   /// 各ユーザーの表示名
@@ -86,109 +94,135 @@ model UserData {
   /// ダークテーマ設定
   isDarkTheme Boolean @default(false)
 
-  /// Admin権限の有無
-  /// クライアント側からの変更禁止
+  /// Admin権限の有無 (変更禁止)
   isAdmin Boolean @default(false)
 
-  /// nextauth用データ構造と紐づける用。公開しない
-  /// 本来はrequiredだがPrismaの仕様上無理
-  authUser User?
+  //* 得点表示用データ
+  /// 参加中のルーム情報
+  scoreBoardRooms       User_ScoreBoardRoom[]
+  /// 参加中のラウンド情報
+  rounds                User_Round?
+  /// 参加中のラウンドのアクション
+  RoundActions          RoundAction[]         @relation("actionUser")
+  TargettedRoundActions RoundAction[]         @relation("targetUser")
 
-  /// 得点表示用ルーム
-  room     Room?     @relation(fields: [roomId], references: [databaseId])
-  roomId   String?
-  /// ルーム内での役割
-  roomRole RoomRole?
-
-  /// ルーム内アクション関係リレーション
-  actions         RoundAction[] @relation("actionUser")
-  targetedActions RoundAction[] @relation("targetUser")
-
-  /// 作成日時
-  createdAt DateTime @default(now())
-  /// 更新日時
-  updatedAt DateTime @updatedAt
+  @@index([userId], type: Hash)
+  @@index([name], type: Hash)
 }
 
-enum RoomRole {
-  OWNER
-  PLAYER
-}
-
-model Room {
+//* 得点表示用データ(リアルタイム更新)
+/// 現在開かれている得点表示ルームのデータ
+model ScoreBoardRoom {
+  //* メタデータ
   /// データベース上のID
-  databaseId     String  @id @default(cuid()) @map("id")
+  databaseId String   @id @default(cuid()) @map("id")
+  /// 作成日時
+  createdAt  DateTime @default(now())
+  /// 最終更新日時
+  updatedAt  DateTime @updatedAt
+
+  //* ルーム情報データ
   /// ルーム名
   name           String
-  /// ルームが有効かどうか（ルーム一覧に表示するかどうか）
-  isActive       Boolean @default(true)
   /// 参加に必要なパスワード
   hashedPassword String?
-
-  /// 参加中のユーザー
-  users UserData[]
-
-  /// ルールの履歴
-  rounds Round[]
-
-  /// 作成日時
-  createdAt DateTime @default(now())
-  /// 更新日時
-  updatedAt DateTime @updatedAt
+  /// 参加中のユーザー(との中間テーブル)
+  users          User_ScoreBoardRoom[]
+  /// 現在行われているラウンド
+  round          Round?
 }
 
-enum RuleType {
-  FREE
+/// ユーザーと得点表示ルームの中間テーブル
+model User_ScoreBoardRoom {
+  //* メタデータ
+  // データベース上のID
+  databaseId String @id @default(cuid()) @map("id")
+
+  //* 接続情報
+  userData         UserData       @relation(fields: [userDataId], references: [databaseId])
+  userDataId       String
+  scoreBoardRoom   ScoreBoardRoom @relation(fields: [scoreBoardRoomId], references: [databaseId], onDelete: Cascade)
+  scoreBoardRoomId String
+
+  //* 付加情報
+  /// ユーザーの得点表示ルーム内での権限
+  role ScoreBoardRoomRole @default(MEMBER)
+
+  @@unique([userDataId, scoreBoardRoomId])
 }
 
+enum ScoreBoardRoomRole {
+  OWNER
+  MEMBER
+}
+
+/// 現在行われているラウンドのデータ
 model Round {
-  databaseId String @id @default(cuid()) @map("id")
-
-  rule   Rule   @relation(fields: [ruleId], references: [databaseId])
-  ruleId String
-
-  actions RoundAction[]
-
-  room      Room    @relation(fields: [roomId], references: [databaseId])
-  roomId    String
-  isCurrent Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Rule {
+  //* メタデータ
   /// データベース上のID
-  databaseId String @id @default(cuid()) @map("id")
-
-  /// ルールの種別
-  ruleType RuleType
-  /// ルール上のパラメータ
-  params   Int[]
-
-  /// このルールが適用されたラウンド
-  rounds Round[]
-
+  databaseId String   @id @default(cuid()) @map("id")
   /// 作成日時
-  createdAt DateTime @default(now())
-  /// 更新日時
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  /// 最終更新日時
+  updatedAt  DateTime @updatedAt
+
+  //* 親情報
+  /// このラウンドが行われているルーム
+  scoreBoardRoom   ScoreBoardRoom @relation(fields: [scoreBoardRoomId], references: [databaseId])
+  scoreBoardRoomId String         @unique
+
+  //* ラウンド情報データ
+  /// 行われているルール
+  rule    Rule          @relation(fields: [ruleId], references: [databaseId])
+  ruleId  String
+  /// 参加したユーザー(との中間テーブル)
+  users   User_Round[]
+  /// 現在までに記録されたアクション
+  actions RoundAction[]
 }
 
-enum RoundActionType {
-  JOIN
-  LEAVE
-  CORRECT
-  WRONG
-  THROUGH
+/// ユーザーと現在のラウンドの中間テーブル
+model User_Round {
+  //* 接続情報
+  userData   UserData @relation(fields: [userDataId], references: [databaseId])
+  userDataId String   @unique
+  round      Round    @relation(fields: [roundId], references: [databaseId], onDelete: Cascade)
+  roundId    String
+
+  //* 付加情報
+  /// ルーム内での役職
+  role         RoundRole
+  /// このラウンドで最初に起こしたアクション
+  rootAction   RoundAction  @relation("rootAction", fields: [rootActionId], references: [databaseId])
+  rootActionId String       @unique
+  /// このラウンドで最後に起こしたことになっているアクション
+  headAction   RoundAction? @relation("headAction", fields: [headActionId], references: [databaseId])
+  headActionId String?      @unique
+
+  @@id([userDataId, roundId])
 }
 
+enum RoundRole {
+  PRAYER
+  ADMIN
+}
+
+/// 現在行われているラウンドのデータ
 model RoundAction {
+  //* メタデータ
   /// データベース上のID
-  databaseId   String          @id @default(cuid()) @map("id")
+  databaseId String   @id @default(cuid()) @map("id")
+  /// 作成日時
+  createdAt  DateTime @default(now())
+  /// 更新日時
+  updatedAt  DateTime @updatedAt
+
+  //* 親情報
   /// アクションが属するルール
-  round        Round           @relation(fields: [roundId], references: [databaseId])
-  roundId      String
+  round   Round  @relation(fields: [roundId], references: [databaseId])
+  roundId String
+
+  //* アクション情報
   /// アクションを行ったユーザー
   actionUser   UserData        @relation("actionUser", fields: [actionUserId], references: [databaseId])
   actionUserId String
@@ -197,17 +231,56 @@ model RoundAction {
   targetUserId String
   /// アクションの種類
   actionType   RoundActionType
+  /// アクションのパラメータ
+  params       Int[]
 
-  /// アンドゥリドゥ用
+  //* アクションの接続関係
+  /// Undoしたときに最新となるアクション
   prevAction   RoundAction? @relation("prevAction", fields: [prevActionId], references: [databaseId])
   prevActionId String?      @unique
-  /// アンドゥリドゥ用
+  /// Redoしたときに最新となるアクション
   nextAction   RoundAction? @relation("prevAction")
-  /// ここが最新のアクションかどうか
-  isCurrent    Boolean      @default(true)
 
+  //* 他データ構造用参照
+  isRootAction User_Round? @relation("rootAction")
+  isHeadAction User_Round? @relation("headAction")
+}
+
+/// ラウンドのアクションの種類
+enum RoundActionType {
+  JOIN_ADMIN
+  JOIN_PLAYER
+  MOVE_ADMIN
+  MOVE_PLAYER
+  LEAVE
+  CORRECT
+  WRONG
+  THROUGH
+}
+
+model Rule {
+  //* メタデータ
+  /// データベース上のID
+  databaseId String   @id @default(cuid()) @map("id")
   /// 作成日時
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
   /// 更新日時
-  updatedAt DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
+
+  //* ルール情報
+  /// ルールの名前
+  name     String
+  /// ルールの種別
+  ruleType RuleType
+  /// ルール上のパラメータ
+  params   Int[]
+
+  //* 他データ構造用参照
+  usedRounds Round[]
+}
+
+/// ルールの種類
+enum RuleType {
+  /// フリバ
+  FREE
 }

@@ -1,0 +1,7 @@
+mutation CreateScoreBoardRoom($input: CreateScoreBoardRoomInput!) {
+  createScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    name
+  }
+}
