@@ -1,0 +1,7 @@
+mutation UpdateScoreBoardRoom($input: UpdateScoreBoardRoomInput!) {
+  updateScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    name
+  }
+}

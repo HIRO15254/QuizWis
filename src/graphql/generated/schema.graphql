@@ -24,6 +24,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input DeleteScoreBoardRoomInput {
+  databaseId: String!
+}
+
 input GetScoreBoardRoomInput {
   databaseId: String!
 }
@@ -49,11 +53,17 @@ type Mutation {
   """得点表示ルームを作成しオーナーになる"""
   createScoreBoardRoom(input: CreateScoreBoardRoomInput!): ScoreBoardRoom
   createUserData(input: CreateUserDataInput!): UserData
+
+  """自分がオーナーである得点表示ルームを削除する"""
+  deleteScoreBoardRoom(input: DeleteScoreBoardRoomInput!): ScoreBoardRoom
+
+  """現在ログインしているアカウントで得点表示ルームに参加する"""
   joinScoreBoardRoom(input: JoinScoreBoardRoomInput!): ScoreBoardRoom
 
-  """得点表示ルームから退出する"""
+  """現在ログインしているアカウンを得点表示ルームから退出させる"""
   leaveScoreBoardRoom(input: LeaveScoreBoardRoomInput!): ScoreBoardRoom
   switchDarkTheme: UserData
+  updateScoreBoardRoom(input: UpdateScoreBoardRoomInput!): ScoreBoardRoom
   updateUserData(input: UpdateUserDataInput!): UserData
 }
 
@@ -101,6 +111,11 @@ type ScoreBoardRoom implements Node {
 enum ScoreBoardRoomRole {
   MEMBER
   OWNER
+}
+
+input UpdateScoreBoardRoomInput {
+  databaseId: String!
+  name: String
 }
 
 input UpdateUserDataInput {

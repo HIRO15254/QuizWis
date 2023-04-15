@@ -10,7 +10,7 @@ export const leaveScoreBoardRoomInput = inputObjectType({
 });
 
 export const leaveScoreBoardRoomMutation = mutationField('leaveScoreBoardRoom', {
-  description: '得点表示ルームから退出する',
+  description: '現在ログインしているアカウンを得点表示ルームから退出させる',
   type: 'ScoreBoardRoom',
   args: {
     input: nonNull(arg({ type: 'LeaveScoreBoardRoomInput' })),

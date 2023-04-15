@@ -8,21 +8,25 @@ import React, { useEffect } from 'react';
 import { useGetScoreBoardRoomsLazyQuery } from '../../../../graphql/generated/type';
 import useNotification from '../../../../hooks/useNotification';
 import useCreateScoreBoardRoom from '../../hooks/useCreateScoreBoardRoom';
+import useDeleteScoreBoardRoom from '../../hooks/useDeleteScoreBoardRoom';
 import useJoinScoreBoardRoom from '../../hooks/useJoinScoreBoardRoom';
 import useLeaveScoreBoardRoom from '../../hooks/useLeaveScoreBoardRoom';
-import RoomList from '../templates/RoomList';
+import useUpdateScoreBoardRoomName from '../../hooks/useUpdateScoreBoardRoomName';
+import ScoreBoardRoomList from '../templates/scoreBoardRoomList/ScoreBoardRoomList';
 
 const RoomListView = () => {
   const [getActiveRooms, { data: activeRooms, loading }] = useGetScoreBoardRoomsLazyQuery({ fetchPolicy: 'cache-and-network' });
+  const [CreateScoreBoardRoomModal, { open: createScoreBoardRoom }] = useCreateScoreBoardRoom();
+  const [JoinRoomWithPasswordModal, { open: joinScoreBoardRoom }] = useJoinScoreBoardRoom();
   const [
-    CreateScoreBoardRoomModal, { open: createScoreBoardRoom },
-  ] = useCreateScoreBoardRoom();
+    UpdateScoreBoardRoomNameModal, { open: updateScoreBoardRoomName },
+  ] = useUpdateScoreBoardRoomName({ onClose: getActiveRooms });
+  const [
+    DeleteScoreBoardRoomModal, { open: deleteScoreBoardRoom },
+  ] = useDeleteScoreBoardRoom({ onClose: getActiveRooms });
   const [
     LeaveScoreBoardRoomModal, { open: leaveScoreBoardRoom },
   ] = useLeaveScoreBoardRoom({ onClose: getActiveRooms });
-  const [
-    JoinRoomWithPasswordModal, { open: joinScoreBoardRoom },
-  ] = useJoinScoreBoardRoom();
 
   const { errorNotification } = useNotification();
   const router = useRouter();
@@ -44,6 +48,8 @@ const RoomListView = () => {
         <CreateScoreBoardRoomModal />
         <LeaveScoreBoardRoomModal />
         <JoinRoomWithPasswordModal />
+        <DeleteScoreBoardRoomModal />
+        <UpdateScoreBoardRoomNameModal />
         <Group position="apart" pb="sm">
           <Title order={3}>
             ルーム一覧
@@ -57,11 +63,13 @@ const RoomListView = () => {
             </Button>
           </Group>
         </Group>
-        <RoomList
+        <ScoreBoardRoomList
           rooms={activeRooms?.getScoreBoardRooms ?? []}
           onJoinButtonClick={(roomId) => joinScoreBoardRoom(roomId)}
           onMoveButtonClick={onMoveButtonClick}
           onLeaveButtonClick={(roomId) => leaveScoreBoardRoom(roomId)}
+          onDeleteButtonClick={(roomId) => deleteScoreBoardRoom(roomId)}
+          onUpdateNameButtonClick={(roomId) => updateScoreBoardRoomName(roomId)}
         />
       </Paper>
     </Group>

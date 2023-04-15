@@ -31,6 +31,10 @@ export type CreateUserDataInput = {
   userId: Scalars['String'];
 };
 
+export type DeleteScoreBoardRoomInput = {
+  databaseId: Scalars['String'];
+};
+
 export type GetScoreBoardRoomInput = {
   databaseId: Scalars['String'];
 };
@@ -57,10 +61,14 @@ export type Mutation = {
   /** 得点表示ルームを作成しオーナーになる */
   createScoreBoardRoom?: Maybe<ScoreBoardRoom>;
   createUserData?: Maybe<UserData>;
+  /** 自分がオーナーである得点表示ルームを削除する */
+  deleteScoreBoardRoom?: Maybe<ScoreBoardRoom>;
+  /** 現在ログインしているアカウントで得点表示ルームに参加する */
   joinScoreBoardRoom?: Maybe<ScoreBoardRoom>;
-  /** 得点表示ルームから退出する */
+  /** 現在ログインしているアカウンを得点表示ルームから退出させる */
   leaveScoreBoardRoom?: Maybe<ScoreBoardRoom>;
   switchDarkTheme?: Maybe<UserData>;
+  updateScoreBoardRoom?: Maybe<ScoreBoardRoom>;
   updateUserData?: Maybe<UserData>;
 };
 
@@ -75,6 +83,11 @@ export type MutationCreateUserDataArgs = {
 };
 
 
+export type MutationDeleteScoreBoardRoomArgs = {
+  input: DeleteScoreBoardRoomInput;
+};
+
+
 export type MutationJoinScoreBoardRoomArgs = {
   input: JoinScoreBoardRoomInput;
 };
@@ -82,6 +95,11 @@ export type MutationJoinScoreBoardRoomArgs = {
 
 export type MutationLeaveScoreBoardRoomArgs = {
   input: LeaveScoreBoardRoomInput;
+};
+
+
+export type MutationUpdateScoreBoardRoomArgs = {
+  input: UpdateScoreBoardRoomInput;
 };
 
 
@@ -149,6 +167,11 @@ export enum ScoreBoardRoomRole {
   Owner = 'OWNER'
 }
 
+export type UpdateScoreBoardRoomInput = {
+  databaseId: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateUserDataInput = {
   bio?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
@@ -202,6 +225,13 @@ export type CreateScoreBoardRoomMutationVariables = Exact<{
 
 export type CreateScoreBoardRoomMutation = { __typename?: 'Mutation', createScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
 
+export type DeleteScoreBoardRoomMutationVariables = Exact<{
+  input: DeleteScoreBoardRoomInput;
+}>;
+
+
+export type DeleteScoreBoardRoomMutation = { __typename?: 'Mutation', deleteScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
+
 export type GetScoreBoardRoomsQueryVariables = Exact<{
   input?: InputMaybe<GetScoreBoardRoomsInput>;
 }>;
@@ -216,12 +246,26 @@ export type LeaveScoreBoardRoomMutationVariables = Exact<{
 
 export type LeaveScoreBoardRoomMutation = { __typename?: 'Mutation', leaveScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
 
+export type UpdateScoreBoardRoomMutationVariables = Exact<{
+  input: UpdateScoreBoardRoomInput;
+}>;
+
+
+export type UpdateScoreBoardRoomMutation = { __typename?: 'Mutation', updateScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
+
 export type GetScoreBoardRoomHasPasswordQueryVariables = Exact<{
   input: GetScoreBoardRoomInput;
 }>;
 
 
 export type GetScoreBoardRoomHasPasswordQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean } | null };
+
+export type GetScoreBoardRoomNameQueryVariables = Exact<{
+  input: GetScoreBoardRoomInput;
+}>;
+
+
+export type GetScoreBoardRoomNameQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
 
 export type JoinScoreBoardRoomMutationVariables = Exact<{
   input: JoinScoreBoardRoomInput;
@@ -297,6 +341,40 @@ export function useCreateScoreBoardRoomMutation(baseOptions?: Apollo.MutationHoo
 export type CreateScoreBoardRoomMutationHookResult = ReturnType<typeof useCreateScoreBoardRoomMutation>;
 export type CreateScoreBoardRoomMutationResult = Apollo.MutationResult<CreateScoreBoardRoomMutation>;
 export type CreateScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<CreateScoreBoardRoomMutation, CreateScoreBoardRoomMutationVariables>;
+export const DeleteScoreBoardRoomDocument = gql`
+    mutation DeleteScoreBoardRoom($input: DeleteScoreBoardRoomInput!) {
+  deleteScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}
+    `;
+export type DeleteScoreBoardRoomMutationFn = Apollo.MutationFunction<DeleteScoreBoardRoomMutation, DeleteScoreBoardRoomMutationVariables>;
+
+/**
+ * __useDeleteScoreBoardRoomMutation__
+ *
+ * To run a mutation, you first call `useDeleteScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteScoreBoardRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteScoreBoardRoomMutation, { data, loading, error }] = useDeleteScoreBoardRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteScoreBoardRoomMutation, DeleteScoreBoardRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteScoreBoardRoomMutation, DeleteScoreBoardRoomMutationVariables>(DeleteScoreBoardRoomDocument, options);
+      }
+export type DeleteScoreBoardRoomMutationHookResult = ReturnType<typeof useDeleteScoreBoardRoomMutation>;
+export type DeleteScoreBoardRoomMutationResult = Apollo.MutationResult<DeleteScoreBoardRoomMutation>;
+export type DeleteScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<DeleteScoreBoardRoomMutation, DeleteScoreBoardRoomMutationVariables>;
 export const GetScoreBoardRoomsDocument = gql`
     query GetScoreBoardRooms($input: GetScoreBoardRoomsInput) {
   getScoreBoardRooms(input: $input) {
@@ -378,6 +456,41 @@ export function useLeaveScoreBoardRoomMutation(baseOptions?: Apollo.MutationHook
 export type LeaveScoreBoardRoomMutationHookResult = ReturnType<typeof useLeaveScoreBoardRoomMutation>;
 export type LeaveScoreBoardRoomMutationResult = Apollo.MutationResult<LeaveScoreBoardRoomMutation>;
 export type LeaveScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<LeaveScoreBoardRoomMutation, LeaveScoreBoardRoomMutationVariables>;
+export const UpdateScoreBoardRoomDocument = gql`
+    mutation UpdateScoreBoardRoom($input: UpdateScoreBoardRoomInput!) {
+  updateScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    name
+  }
+}
+    `;
+export type UpdateScoreBoardRoomMutationFn = Apollo.MutationFunction<UpdateScoreBoardRoomMutation, UpdateScoreBoardRoomMutationVariables>;
+
+/**
+ * __useUpdateScoreBoardRoomMutation__
+ *
+ * To run a mutation, you first call `useUpdateScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateScoreBoardRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateScoreBoardRoomMutation, { data, loading, error }] = useUpdateScoreBoardRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<UpdateScoreBoardRoomMutation, UpdateScoreBoardRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateScoreBoardRoomMutation, UpdateScoreBoardRoomMutationVariables>(UpdateScoreBoardRoomDocument, options);
+      }
+export type UpdateScoreBoardRoomMutationHookResult = ReturnType<typeof useUpdateScoreBoardRoomMutation>;
+export type UpdateScoreBoardRoomMutationResult = Apollo.MutationResult<UpdateScoreBoardRoomMutation>;
+export type UpdateScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<UpdateScoreBoardRoomMutation, UpdateScoreBoardRoomMutationVariables>;
 export const GetScoreBoardRoomHasPasswordDocument = gql`
     query GetScoreBoardRoomHasPassword($input: GetScoreBoardRoomInput!) {
   getScoreBoardRoom(input: $input) {
@@ -415,6 +528,43 @@ export function useGetScoreBoardRoomHasPasswordLazyQuery(baseOptions?: Apollo.La
 export type GetScoreBoardRoomHasPasswordQueryHookResult = ReturnType<typeof useGetScoreBoardRoomHasPasswordQuery>;
 export type GetScoreBoardRoomHasPasswordLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomHasPasswordLazyQuery>;
 export type GetScoreBoardRoomHasPasswordQueryResult = Apollo.QueryResult<GetScoreBoardRoomHasPasswordQuery, GetScoreBoardRoomHasPasswordQueryVariables>;
+export const GetScoreBoardRoomNameDocument = gql`
+    query GetScoreBoardRoomName($input: GetScoreBoardRoomInput!) {
+  getScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    name
+  }
+}
+    `;
+
+/**
+ * __useGetScoreBoardRoomNameQuery__
+ *
+ * To run a query within a React component, call `useGetScoreBoardRoomNameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScoreBoardRoomNameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScoreBoardRoomNameQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetScoreBoardRoomNameQuery(baseOptions: Apollo.QueryHookOptions<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>(GetScoreBoardRoomNameDocument, options);
+      }
+export function useGetScoreBoardRoomNameLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>(GetScoreBoardRoomNameDocument, options);
+        }
+export type GetScoreBoardRoomNameQueryHookResult = ReturnType<typeof useGetScoreBoardRoomNameQuery>;
+export type GetScoreBoardRoomNameLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomNameLazyQuery>;
+export type GetScoreBoardRoomNameQueryResult = Apollo.QueryResult<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>;
 export const JoinScoreBoardRoomDocument = gql`
     mutation JoinScoreBoardRoom($input: JoinScoreBoardRoomInput!) {
   joinScoreBoardRoom(input: $input) {

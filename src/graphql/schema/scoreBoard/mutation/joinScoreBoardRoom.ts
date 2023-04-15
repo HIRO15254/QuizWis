@@ -12,6 +12,7 @@ export const joinScoreBoardRoomInput = inputObjectType({
 });
 
 export const joinScoreBoardRoomMutation = mutationField('joinScoreBoardRoom', {
+  description: '現在ログインしているアカウントで得点表示ルームに参加する',
   type: 'ScoreBoardRoom',
   args: {
     input: nonNull(arg({ type: 'JoinScoreBoardRoomInput' })),

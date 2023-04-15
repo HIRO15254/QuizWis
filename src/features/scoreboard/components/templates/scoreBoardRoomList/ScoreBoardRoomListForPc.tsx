@@ -1,16 +1,18 @@
 import {
-  Table, Text, Button, Title, Group, Badge,
+  Table, Text, Button, Title, Group, Badge, Menu, ActionIcon,
 } from '@mantine/core';
 import {
-  IconTrash, IconDoorEnter, IconDoorExit, IconLock,
+  IconTrash, IconDoorEnter, IconDoorExit, IconLock, IconDotsVertical,
 } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
-import UserIcons from '../../../../components/templates/userIcons';
-import { ScoreBoardRoomRole } from '../../../../graphql/generated/type';
+import ScoreBoardRoomListMemberMenu from './ScoreBoardRoomListMemberMenu';
+import ScoreBoardRoomListOwnerMenu from './ScoreBoardRoomListOwnerMenu';
+import UserIcons from '../../../../../components/templates/userIcons';
+import { ScoreBoardRoomRole } from '../../../../../graphql/generated/type';
 
-type RoomProps = {
+export type RoomProps = {
   databaseId: string;
   name: string;
   hasPassword: boolean;
@@ -29,6 +31,8 @@ export type RoomListProps = {
   onJoinButtonClick: (roomId: string, hasPassword: boolean) => void;
   onMoveButtonClick: (roomId: string) => void;
   onLeaveButtonClick: (roomId: string) => void;
+  onDeleteButtonClick: (roomId: string) => void;
+  onUpdateNameButtonClick: (roomId: string) => void;
 };
 
 export type RoomTableWithHeaderProps = {
@@ -51,7 +55,7 @@ export const inAnyRoom = (rooms: (RoomProps | null)[], userId: string) => {
   return ret !== undefined;
 };
 
-const RoomTablePCWithHeader = (props: RoomTableWithHeaderProps) => {
+const ScoreBoardRoomTableHeaderForPc = (props: RoomTableWithHeaderProps) => {
   const { children } = props;
   return (
     <Table styles={{ layout: 'fixed' }} w="100%" highlightOnHover mb="lg">
@@ -69,7 +73,7 @@ const RoomTablePCWithHeader = (props: RoomTableWithHeaderProps) => {
   );
 };
 
-const RoomTablePCTr = (props: RoomTableTrProps) => {
+const ScoreBoardRoomTableRowForPc = (props: RoomTableTrProps) => {
   const { room, children, role } = props;
   return (
     <tr key={room.databaseId}>
@@ -93,9 +97,14 @@ const RoomTablePCTr = (props: RoomTableTrProps) => {
   );
 };
 
-const RoomListPC = (props: RoomListProps) => {
+const ScoreBoardRoomListForPc = (props: RoomListProps) => {
   const {
-    rooms, onJoinButtonClick, onMoveButtonClick, onLeaveButtonClick,
+    rooms,
+    onJoinButtonClick,
+    onMoveButtonClick,
+    onLeaveButtonClick,
+    onDeleteButtonClick,
+    onUpdateNameButtonClick,
   } = props;
   const { data: session } = useSession();
   return (
@@ -105,15 +114,14 @@ const RoomListPC = (props: RoomListProps) => {
         <Title order={4}>
           参加中のルーム
         </Title>
-        <RoomTablePCWithHeader>
+        <ScoreBoardRoomTableHeaderForPc>
           {rooms.map((room) => {
-            if (!room) return null;
-            if (!isInRoom(room, session?.userData.userId ?? '')) return null;
+            if (!room || !isInRoom(room, session?.userData.userId ?? '')) return null;
             const userRole = room.users.find(
               (user) => user.userData.userId === session?.userData.userId,
             )?.role;
             return (
-              <RoomTablePCTr room={room} key={room.databaseId} role={userRole}>
+              <ScoreBoardRoomTableRowForPc room={room} key={room.databaseId} role={userRole}>
                 <Group position="right">
                   <Button
                     size="sm"
@@ -124,59 +132,50 @@ const RoomListPC = (props: RoomListProps) => {
                     移動
                   </Button>
                   {userRole === ScoreBoardRoomRole.Owner && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<IconTrash size="1rem" />}
-                    onClick={() => onLeaveButtonClick(room.databaseId)}
-                    color="red"
-                  >
-                    削除
-                  </Button>
+                    <ScoreBoardRoomListOwnerMenu
+                      databaseId={room.databaseId}
+                      onLeaveButtonClick={onLeaveButtonClick}
+                      onDeleteButtonClick={onDeleteButtonClick}
+                      onUpdateNameButtonClick={onUpdateNameButtonClick}
+                    />
                   )}
-                  {userRole !== ScoreBoardRoomRole.Owner && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<IconDoorExit size="1rem" />}
-                    onClick={() => onLeaveButtonClick(room.databaseId)}
-                    color="red"
-                  >
-                    退出
-                  </Button>
+                  {userRole === ScoreBoardRoomRole.Member && (
+                    <ScoreBoardRoomListMemberMenu
+                      databaseId={room.databaseId}
+                      onLeaveButtonClick={onLeaveButtonClick}
+                    />
                   )}
                 </Group>
-              </RoomTablePCTr>
+              </ScoreBoardRoomTableRowForPc>
             );
           })}
-        </RoomTablePCWithHeader>
+        </ScoreBoardRoomTableHeaderForPc>
         <Title order={4}>
           進行中のルーム
         </Title>
       </>
       )}
-      <RoomTablePCWithHeader>
+      <ScoreBoardRoomTableHeaderForPc>
         {rooms.map((room) => {
-          if (!room) return null;
-          if (isInRoom(room, session?.userData.userId ?? '')) return null;
+          if (!room || isInRoom(room, session?.userData.userId ?? '')) return null;
           return (
-            <RoomTablePCTr room={room} key={room.databaseId}>
+            <ScoreBoardRoomTableRowForPc room={room} key={room.databaseId}>
               <Group position="right">
                 <Button
                   size="sm"
                   variant="outline"
-                  leftIcon={room.hasPassword ? <IconLock size="1.0rem" /> : <IconDoorEnter size="1rem" />}
+                  leftIcon={room.hasPassword ? <IconLock size="1rem" /> : <IconDoorEnter size="1rem" />}
                   onClick={() => onJoinButtonClick(room.databaseId, room.hasPassword)}
                 >
                   参加
                 </Button>
               </Group>
-            </RoomTablePCTr>
+            </ScoreBoardRoomTableRowForPc>
           );
         })}
-      </RoomTablePCWithHeader>
+      </ScoreBoardRoomTableHeaderForPc>
     </>
   );
 };
 
-export default RoomListPC;
+export default ScoreBoardRoomListForPc;
