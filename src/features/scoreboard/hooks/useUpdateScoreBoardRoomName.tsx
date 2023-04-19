@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { useGetScoreBoardRoomNameLazyQuery, useUpdateScoreBoardRoomMutation } from '../../../graphql/generated/type';
 import useNotification from '../../../hooks/useNotification';
-import UpdateScoreBoardRoomNameModal, { UpdateScoreBoardRoomNameFormType } from '../components/views/parts/UpdateScoreBoardRoomNameModal';
+import UpdateScoreBoardRoomNameModal, { UpdateScoreBoardRoomNameFormType } from '../components/templates/modals/UpdateScoreBoardRoomNameModal';
 
 type UseUpdateScoreBoardRoomNameProps = {
   onOpen?(): void;

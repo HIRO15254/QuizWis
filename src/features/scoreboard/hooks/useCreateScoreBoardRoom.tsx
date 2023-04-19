@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useCreateScoreBoardRoomMutation } from '../../../graphql/generated/type';
 import useNotification from '../../../hooks/useNotification';
-import CreateScoreBoardRoomModal, { CreateScoreBoardRoomFormType } from '../components/views/parts/CreateScoreBoardRoomModal';
+import CreateScoreBoardRoomModal, { CreateScoreBoardRoomFormType } from '../components/templates/modals/CreateScoreBoardRoomModal';
 
 type UseCreateScoreBoardRoomProps = {
   onOpen?(): void;

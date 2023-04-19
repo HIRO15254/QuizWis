@@ -1,8 +1,8 @@
 import {
-  Table, Text, Button, Title, Group, Badge, Menu, ActionIcon,
+  Table, Text, Button, Title, Group, Badge,
 } from '@mantine/core';
 import {
-  IconTrash, IconDoorEnter, IconDoorExit, IconLock, IconDotsVertical,
+  IconDoorEnter, IconLock,
 } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import React from 'react';

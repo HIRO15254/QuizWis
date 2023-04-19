@@ -14,7 +14,7 @@ import useLeaveScoreBoardRoom from '../../hooks/useLeaveScoreBoardRoom';
 import useUpdateScoreBoardRoomName from '../../hooks/useUpdateScoreBoardRoomName';
 import ScoreBoardRoomList from '../templates/scoreBoardRoomList/ScoreBoardRoomList';
 
-const RoomListView = () => {
+const ScoreBoardRoomListView = () => {
   const [getActiveRooms, { data: activeRooms, loading }] = useGetScoreBoardRoomsLazyQuery({ fetchPolicy: 'cache-and-network' });
   const [CreateScoreBoardRoomModal, { open: createScoreBoardRoom }] = useCreateScoreBoardRoom();
   const [JoinRoomWithPasswordModal, { open: joinScoreBoardRoom }] = useJoinScoreBoardRoom();
@@ -76,4 +76,4 @@ const RoomListView = () => {
   );
 };
 
-export default RoomListView;
+export default ScoreBoardRoomListView;

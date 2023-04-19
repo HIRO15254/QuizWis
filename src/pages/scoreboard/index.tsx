@@ -1,13 +1,13 @@
 import { PageFC } from 'next';
 import React from 'react';
 
-import RoomListView from '../../features/scoreboard/components/views/RoomListView';
+import ScoreBoardRoomListView from '../../features/scoreboard/components/views/ScoreBoardRoomListView';
 
 /**
  * 得点表示ページ
  */
 const ScoreBoardListPage: PageFC = () => (
-  <RoomListView />
+  <ScoreBoardRoomListView />
 );
 
 ScoreBoardListPage.getInitialProps = async () => ({

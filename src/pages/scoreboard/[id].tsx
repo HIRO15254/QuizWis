@@ -2,14 +2,14 @@ import { PageFC } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 
+import ScoreBoardRoomView from '../../features/scoreboard/components/views/ScoreBoardRoomView';
+
 const ScoreBoardPage: PageFC = () => {
   const router = useRouter();
   const { id } = router.query;
 
   return (
-    <div>
-      <h1>{`Scoreboard ${id}`}</h1>
-    </div>
+    <ScoreBoardRoomView databaseId={id as string} />
   );
 };
 

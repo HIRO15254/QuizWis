@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { useGetScoreBoardRoomHasPasswordLazyQuery, useJoinScoreBoardRoomMutation } from '../../../graphql/generated/type';
 import useNotification from '../../../hooks/useNotification';
-import JoinScoreBoardRoomModal from '../components/views/parts/JoinScoreBoardRoomModal';
+import JoinScoreBoardRoomModal from '../components/templates/modals/JoinScoreBoardRoomModal';
 
 type UseJoinScoreBoardRoomProps = {
   onOpen?(): void;

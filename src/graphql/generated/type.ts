@@ -253,6 +253,13 @@ export type UpdateScoreBoardRoomMutationVariables = Exact<{
 
 export type UpdateScoreBoardRoomMutation = { __typename?: 'Mutation', updateScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
 
+export type GetScoreBoardRoomDataQueryVariables = Exact<{
+  input: GetScoreBoardRoomInput;
+}>;
+
+
+export type GetScoreBoardRoomDataQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean, name: string, users: Array<{ __typename?: 'User_ScoreBoardRoom', role: ScoreBoardRoomRole, userData: { __typename?: 'UserData', name: string, id: string, iconUrl?: string | null, userId: string, databaseId: string } }> } | null };
+
 export type GetScoreBoardRoomHasPasswordQueryVariables = Exact<{
   input: GetScoreBoardRoomInput;
 }>;
@@ -491,6 +498,54 @@ export function useUpdateScoreBoardRoomMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateScoreBoardRoomMutationHookResult = ReturnType<typeof useUpdateScoreBoardRoomMutation>;
 export type UpdateScoreBoardRoomMutationResult = Apollo.MutationResult<UpdateScoreBoardRoomMutation>;
 export type UpdateScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<UpdateScoreBoardRoomMutation, UpdateScoreBoardRoomMutationVariables>;
+export const GetScoreBoardRoomDataDocument = gql`
+    query getScoreBoardRoomData($input: GetScoreBoardRoomInput!) {
+  getScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    hasPassword
+    name
+    users {
+      role
+      userData {
+        name
+        id
+        iconUrl
+        userId
+        databaseId
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetScoreBoardRoomDataQuery__
+ *
+ * To run a query within a React component, call `useGetScoreBoardRoomDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScoreBoardRoomDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScoreBoardRoomDataQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetScoreBoardRoomDataQuery(baseOptions: Apollo.QueryHookOptions<GetScoreBoardRoomDataQuery, GetScoreBoardRoomDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScoreBoardRoomDataQuery, GetScoreBoardRoomDataQueryVariables>(GetScoreBoardRoomDataDocument, options);
+      }
+export function useGetScoreBoardRoomDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScoreBoardRoomDataQuery, GetScoreBoardRoomDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScoreBoardRoomDataQuery, GetScoreBoardRoomDataQueryVariables>(GetScoreBoardRoomDataDocument, options);
+        }
+export type GetScoreBoardRoomDataQueryHookResult = ReturnType<typeof useGetScoreBoardRoomDataQuery>;
+export type GetScoreBoardRoomDataLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomDataLazyQuery>;
+export type GetScoreBoardRoomDataQueryResult = Apollo.QueryResult<GetScoreBoardRoomDataQuery, GetScoreBoardRoomDataQueryVariables>;
 export const GetScoreBoardRoomHasPasswordDocument = gql`
     query GetScoreBoardRoomHasPassword($input: GetScoreBoardRoomInput!) {
   getScoreBoardRoom(input: $input) {

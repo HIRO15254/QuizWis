@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { useDeleteScoreBoardRoomMutation } from '../../../graphql/generated/type';
 import useNotification from '../../../hooks/useNotification';
-import DeleteScoreBoardRoomModal from '../components/views/parts/DeleteScoreBoardRoomModal';
+import DeleteScoreBoardRoomModal from '../components/templates/modals/DeleteScoreBoardRoomModal';
 
 type UseDeleteScoreBoardRoomProps = {
   onOpen?(): void;
@@ -43,7 +43,7 @@ const useDeleteScoreBoardRoom = (
   // API通信用hook
   const [deleteScoreBoardRoomMutation] = useDeleteScoreBoardRoomMutation();
   // UI表示用hook
-  const { errorNotification } = useNotification();
+  const { errorNotification, successNotification } = useNotification();
 
   /**
    * 実際に得点表示ルームの退出を行う関数
@@ -60,6 +60,7 @@ const useDeleteScoreBoardRoom = (
       errorNotification({ message: e.message });
     }).then((ret) => {
       if (ret && !ret.errors) {
+        successNotification({ message: 'ルームを削除しました' });
         router.push('/scoreboard');
       }
     });

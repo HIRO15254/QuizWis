@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { useLeaveScoreBoardRoomMutation } from '../../../graphql/generated/type';
 import useNotification from '../../../hooks/useNotification';
-import LeaveScoreBoardRoomModal from '../components/views/parts/leaveScoreBoardRoomModal';
+import LeaveScoreBoardRoomModal from '../components/templates/modals/leaveScoreBoardRoomModal';
 
 type UseLeaveScoreBoardRoomProps = {
   onOpen?(): void;
@@ -43,7 +43,7 @@ const useLeaveScoreBoardRoom = (
   // API通信用hook
   const [leaveScoreBoardRoomMutation] = useLeaveScoreBoardRoomMutation();
   // UI表示用hook
-  const { errorNotification } = useNotification();
+  const { errorNotification, successNotification } = useNotification();
 
   /**
    * 実際に得点表示ルームの退出を行う関数
@@ -61,6 +61,7 @@ const useLeaveScoreBoardRoom = (
     }).then((ret) => {
       if (ret && !ret.errors) {
         router.push('/scoreboard');
+        successNotification({ message: '退出しました' });
       }
     });
   };
