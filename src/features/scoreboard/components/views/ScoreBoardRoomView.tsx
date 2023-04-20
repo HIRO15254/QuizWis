@@ -7,6 +7,7 @@ import React from 'react';
 
 import ScoreBoardRoomUserList from './ScoreBoardRoomUserList';
 import { useGetScoreBoardRoomDataQuery } from '../../../../graphql/generated/type';
+import useCreateRound from '../../hooks/useCreateRound';
 
 type ScoreBoardRoomViewProps = {
   databaseId: string;
@@ -15,6 +16,7 @@ type ScoreBoardRoomViewProps = {
 const ScoreBoardRoomView = (props: ScoreBoardRoomViewProps) => {
   const { databaseId } = props;
   const { ref, toggle } = useFullscreen();
+  const [CreateRoundModal, { open: createRound }] = useCreateRound();
 
   const { data: queryData } = useGetScoreBoardRoomDataQuery({
     variables: {
@@ -33,6 +35,7 @@ const ScoreBoardRoomView = (props: ScoreBoardRoomViewProps) => {
 
   return (
     <Paper w="100%" p="lg" h="100%" ref={ref}>
+      <CreateRoundModal />
       <Title order={2}>
         {data.name}
       </Title>
@@ -56,7 +59,7 @@ const ScoreBoardRoomView = (props: ScoreBoardRoomViewProps) => {
                 <Text>
                   現在進行中のラウンドはありません
                 </Text>
-                <Button>
+                <Button onClick={createRound}>
                   ラウンドを開始する
                 </Button>
               </Stack>

@@ -28,6 +28,18 @@ input DeleteScoreBoardRoomInput {
   databaseId: String!
 }
 
+"""フリバのルールを表すオブジェクト"""
+type FreeRule implements Node & Rule {
+  createdAt: DateTime
+  databaseId: String
+  id: ID!
+  name: String
+  questionLimit: Int
+  ruleType: RuleType!
+  timeLimit: DateTime
+  updatedAt: DateTime
+}
+
 input GetScoreBoardRoomInput {
   databaseId: String!
 }
@@ -97,6 +109,26 @@ type Round implements Node {
 
   """最終更新日時"""
   updatedAt: DateTime!
+}
+
+interface Rule {
+  createdAt: DateTime
+  databaseId: String
+  name: String
+  questionLimit: Int
+  ruleType: RuleType!
+  timeLimit: DateTime
+  updatedAt: DateTime
+}
+
+enum RuleType {
+  BY
+  DIVIDE
+  FREE
+  PLUS_MINUS
+  SIMPLE
+  SWEDISH
+  UP_DOWN
 }
 
 """現在開かれている得点表示ルームのデータ"""

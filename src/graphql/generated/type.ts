@@ -272,6 +272,13 @@ export type GetScoreBoardRoomsQueryVariables = Exact<{
 
 export type GetScoreBoardRoomsQuery = { __typename?: 'Query', getScoreBoardRooms?: Array<{ __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean, name: string, users: Array<{ __typename?: 'User_ScoreBoardRoom', role: ScoreBoardRoomRole, userData: { __typename?: 'UserData', id: string, iconUrl?: string | null, userId: string, databaseId: string } }> } | null> | null };
 
+export type JoinScoreBoardRoomMutationVariables = Exact<{
+  input: JoinScoreBoardRoomInput;
+}>;
+
+
+export type JoinScoreBoardRoomMutation = { __typename?: 'Mutation', joinScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
+
 export type LeaveScoreBoardRoomMutationVariables = Exact<{
   input: LeaveScoreBoardRoomInput;
 }>;
@@ -306,13 +313,6 @@ export type GetScoreBoardRoomNameQueryVariables = Exact<{
 
 
 export type GetScoreBoardRoomNameQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, name: string } | null };
-
-export type JoinScoreBoardRoomMutationVariables = Exact<{
-  input: JoinScoreBoardRoomInput;
-}>;
-
-
-export type JoinScoreBoardRoomMutation = { __typename?: 'Mutation', joinScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string } | null };
 
 export type CreateUserDataMutationVariables = Exact<{
   input: CreateUserDataInput;
@@ -462,6 +462,40 @@ export function useGetScoreBoardRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetScoreBoardRoomsQueryHookResult = ReturnType<typeof useGetScoreBoardRoomsQuery>;
 export type GetScoreBoardRoomsLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomsLazyQuery>;
 export type GetScoreBoardRoomsQueryResult = Apollo.QueryResult<GetScoreBoardRoomsQuery, GetScoreBoardRoomsQueryVariables>;
+export const JoinScoreBoardRoomDocument = gql`
+    mutation JoinScoreBoardRoom($input: JoinScoreBoardRoomInput!) {
+  joinScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}
+    `;
+export type JoinScoreBoardRoomMutationFn = Apollo.MutationFunction<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
+
+/**
+ * __useJoinScoreBoardRoomMutation__
+ *
+ * To run a mutation, you first call `useJoinScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinScoreBoardRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinScoreBoardRoomMutation, { data, loading, error }] = useJoinScoreBoardRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useJoinScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>(JoinScoreBoardRoomDocument, options);
+      }
+export type JoinScoreBoardRoomMutationHookResult = ReturnType<typeof useJoinScoreBoardRoomMutation>;
+export type JoinScoreBoardRoomMutationResult = Apollo.MutationResult<JoinScoreBoardRoomMutation>;
+export type JoinScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
 export const LeaveScoreBoardRoomDocument = gql`
     mutation LeaveScoreBoardRoom($input: LeaveScoreBoardRoomInput!) {
   leaveScoreBoardRoom(input: $input) {
@@ -658,40 +692,6 @@ export function useGetScoreBoardRoomNameLazyQuery(baseOptions?: Apollo.LazyQuery
 export type GetScoreBoardRoomNameQueryHookResult = ReturnType<typeof useGetScoreBoardRoomNameQuery>;
 export type GetScoreBoardRoomNameLazyQueryHookResult = ReturnType<typeof useGetScoreBoardRoomNameLazyQuery>;
 export type GetScoreBoardRoomNameQueryResult = Apollo.QueryResult<GetScoreBoardRoomNameQuery, GetScoreBoardRoomNameQueryVariables>;
-export const JoinScoreBoardRoomDocument = gql`
-    mutation JoinScoreBoardRoom($input: JoinScoreBoardRoomInput!) {
-  joinScoreBoardRoom(input: $input) {
-    id
-    databaseId
-  }
-}
-    `;
-export type JoinScoreBoardRoomMutationFn = Apollo.MutationFunction<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
-
-/**
- * __useJoinScoreBoardRoomMutation__
- *
- * To run a mutation, you first call `useJoinScoreBoardRoomMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useJoinScoreBoardRoomMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [joinScoreBoardRoomMutation, { data, loading, error }] = useJoinScoreBoardRoomMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useJoinScoreBoardRoomMutation(baseOptions?: Apollo.MutationHookOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>(JoinScoreBoardRoomDocument, options);
-      }
-export type JoinScoreBoardRoomMutationHookResult = ReturnType<typeof useJoinScoreBoardRoomMutation>;
-export type JoinScoreBoardRoomMutationResult = Apollo.MutationResult<JoinScoreBoardRoomMutation>;
-export type JoinScoreBoardRoomMutationOptions = Apollo.BaseMutationOptions<JoinScoreBoardRoomMutation, JoinScoreBoardRoomMutationVariables>;
 export const CreateUserDataDocument = gql`
     mutation CreateUserData($input: CreateUserDataInput!) {
   createUserData(input: $input) {

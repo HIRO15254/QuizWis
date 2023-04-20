@@ -273,9 +273,13 @@ model Rule {
 
   //* ルール情報
   /// ルールの名前
-  name     String
+  name     String?
   /// ルールの種別
   ruleType RuleType
+  /// 限定問題数
+  questionLimit    Int?
+  /// 制限時間
+  timeLimit     DateTime?
   /// ルール上のパラメータ
   params   Int[]
 
@@ -287,4 +291,16 @@ model Rule {
 enum RuleType {
   /// フリバ
   FREE
+  /// n〇m✕
+  SIMPLE
+  /// +n/-m
+  PLUS_MINUS
+  /// up-down
+  UP_DOWN
+  /// swedish
+  SWEDISH
+  /// by
+  BY
+  /// Divide
+  DIVIDE
 }
