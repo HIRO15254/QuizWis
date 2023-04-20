@@ -6,16 +6,24 @@ export const userDataObject = objectType({
   description: UserData.$description,
   definition(t) {
     t.implements('Node');
+    //* メタデータ
     t.field(UserData.databaseId);
+    t.field(UserData.createdAt);
+    t.field(UserData.updatedAt);
+
+    //* 基本データ
     t.field(UserData.userId);
-    t.field(UserData.email);
     t.field(UserData.name);
     t.field(UserData.bio);
-    t.field(UserData.isAdmin);
+    t.field(UserData.email);
     t.field(UserData.iconUrl);
     t.field(UserData.isDarkTheme);
 
+    t.field(UserData.isAdmin);
+
+    //* 得点表示用データ
     t.field(UserData.scoreBoardRooms);
+    t.field(UserData.rounds);
 
     t.nonNull.id('id', {
       description: 'relay仕様のID',

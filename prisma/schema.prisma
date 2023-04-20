@@ -183,6 +183,10 @@ model Round {
 
 /// ユーザーと現在のラウンドの中間テーブル
 model User_Round {
+  //* メタデータ
+  // データベース上のID
+  databaseId String @id @default(cuid()) @map("id")
+
   //* 接続情報
   userData   UserData @relation(fields: [userDataId], references: [databaseId])
   userDataId String   @unique
@@ -199,7 +203,7 @@ model User_Round {
   headAction   RoundAction? @relation("headAction", fields: [headActionId], references: [databaseId])
   headActionId String?      @unique
 
-  @@id([userDataId, roundId])
+  @@unique([userDataId, roundId])
 }
 
 enum RoundRole {

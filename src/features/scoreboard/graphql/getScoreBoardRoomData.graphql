@@ -4,6 +4,10 @@ query getScoreBoardRoomData($input: GetScoreBoardRoomInput!) {
     databaseId
     hasPassword
     name
+    round {
+      id
+      databaseId
+    }
     users {
       role
       userData {
@@ -14,5 +18,6 @@ query getScoreBoardRoomData($input: GetScoreBoardRoomInput!) {
         databaseId
       }
     }
+    isOwner
   }
 }

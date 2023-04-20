@@ -14,7 +14,7 @@ export const scoreBoardRoomObject = objectType({
     t.field(ScoreBoardRoom.name);
     t.field(ScoreBoardRoom.hashedPassword);
     t.field(ScoreBoardRoom.users);
-    // t.field(ScoreBoardRoom.round);
+    t.field(ScoreBoardRoom.round);
 
     //* relay関係
     t.implements('Node');
@@ -28,6 +28,20 @@ export const scoreBoardRoomObject = objectType({
       description: 'パスワードがかかっているか',
       type: 'Boolean',
       resolve: (parent, _args, _ctx) => parent.hashedPassword !== null,
+    });
+    t.nonNull.boolean('isOwner', {
+      description: 'この部屋のオーナーであるか',
+      resolve: async (parent, _args, ctx) => {
+        const users = await ctx.prisma.scoreBoardRoom.findUnique({
+          where: { databaseId: parent.databaseId },
+        }).users();
+        if (!users) return false;
+        const connection = users.find(
+          (user) => user.userDataId === ctx.currentUserData?.databaseId,
+        );
+        if (!connection) return false;
+        return connection.role === 'OWNER';
+      },
     });
   },
 });

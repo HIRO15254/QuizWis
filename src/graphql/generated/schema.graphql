@@ -81,6 +81,24 @@ type Query {
   node(id: String!): Node
 }
 
+"""現在行われているラウンドのデータ"""
+type Round implements Node {
+  """作成日時"""
+  createdAt: DateTime!
+
+  """データベース上のID"""
+  databaseId: ID!
+
+  """relay仕様のID"""
+  id: ID!
+
+  """このラウンドが行われているルーム"""
+  scoreBoardRoom: ScoreBoardRoom!
+
+  """最終更新日時"""
+  updatedAt: DateTime!
+}
+
 """現在開かれている得点表示ルームのデータ"""
 type ScoreBoardRoom implements Node {
   """作成日時"""
@@ -98,8 +116,14 @@ type ScoreBoardRoom implements Node {
   """relay仕様のID"""
   id: ID!
 
+  """この部屋のオーナーであるか"""
+  isOwner: Boolean!
+
   """ルーム名"""
   name: String!
+
+  """現在行われているラウンド"""
+  round: Round
 
   """最終更新日時"""
   updatedAt: DateTime!
@@ -133,6 +157,9 @@ type UserData implements Node {
   """各ユーザーのプロフィールページの内容"""
   bio: String
 
+  """作成日時"""
+  createdAt: DateTime!
+
   """データベース上のID"""
   databaseId: ID!
 
@@ -154,11 +181,24 @@ type UserData implements Node {
   """各ユーザーの表示名"""
   name: String!
 
+  """参加中のラウンド情報"""
+  rounds: User_Round
+
   """参加中のルーム情報"""
   scoreBoardRooms: [User_ScoreBoardRoom!]!
 
+  """最終更新日時"""
+  updatedAt: DateTime!
+
   """各ユーザーが任意につけられるかつUniqueなID"""
   userId: String!
+}
+
+"""ユーザーと現在のラウンドの中間テーブル"""
+type User_Round {
+  databaseId: ID!
+  round: Round!
+  userData: UserData!
 }
 
 """ユーザーと得点表示ルームの中間テーブル"""

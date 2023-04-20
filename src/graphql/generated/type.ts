@@ -141,6 +141,21 @@ export type QueryNodeArgs = {
   id: Scalars['String'];
 };
 
+/** 現在行われているラウンドのデータ */
+export type Round = Node & {
+  __typename?: 'Round';
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
+  /** データベース上のID */
+  databaseId: Scalars['ID'];
+  /** relay仕様のID */
+  id: Scalars['ID'];
+  /** このラウンドが行われているルーム */
+  scoreBoardRoom: ScoreBoardRoom;
+  /** 最終更新日時 */
+  updatedAt: Scalars['DateTime'];
+};
+
 /** 現在開かれている得点表示ルームのデータ */
 export type ScoreBoardRoom = Node & {
   __typename?: 'ScoreBoardRoom';
@@ -154,8 +169,12 @@ export type ScoreBoardRoom = Node & {
   hashedPassword?: Maybe<Scalars['String']>;
   /** relay仕様のID */
   id: Scalars['ID'];
+  /** この部屋のオーナーであるか */
+  isOwner: Scalars['Boolean'];
   /** ルーム名 */
   name: Scalars['String'];
+  /** 現在行われているラウンド */
+  round?: Maybe<Round>;
   /** 最終更新日時 */
   updatedAt: Scalars['DateTime'];
   /** 参加中のユーザー(との中間テーブル) */
@@ -187,6 +206,8 @@ export type UserData = Node & {
   __typename?: 'UserData';
   /** 各ユーザーのプロフィールページの内容 */
   bio?: Maybe<Scalars['String']>;
+  /** 作成日時 */
+  createdAt: Scalars['DateTime'];
   /** データベース上のID */
   databaseId: Scalars['ID'];
   /** 各ユーザーemailアドレス */
@@ -201,10 +222,22 @@ export type UserData = Node & {
   isDarkTheme: Scalars['Boolean'];
   /** 各ユーザーの表示名 */
   name: Scalars['String'];
+  /** 参加中のラウンド情報 */
+  rounds?: Maybe<User_Round>;
   /** 参加中のルーム情報 */
   scoreBoardRooms: Array<User_ScoreBoardRoom>;
+  /** 最終更新日時 */
+  updatedAt: Scalars['DateTime'];
   /** 各ユーザーが任意につけられるかつUniqueなID */
   userId: Scalars['String'];
+};
+
+/** ユーザーと現在のラウンドの中間テーブル */
+export type User_Round = {
+  __typename?: 'User_Round';
+  databaseId: Scalars['ID'];
+  round: Round;
+  userData: UserData;
 };
 
 /** ユーザーと得点表示ルームの中間テーブル */
@@ -258,7 +291,7 @@ export type GetScoreBoardRoomDataQueryVariables = Exact<{
 }>;
 
 
-export type GetScoreBoardRoomDataQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean, name: string, users: Array<{ __typename?: 'User_ScoreBoardRoom', role: ScoreBoardRoomRole, userData: { __typename?: 'UserData', name: string, id: string, iconUrl?: string | null, userId: string, databaseId: string } }> } | null };
+export type GetScoreBoardRoomDataQuery = { __typename?: 'Query', getScoreBoardRoom?: { __typename?: 'ScoreBoardRoom', id: string, databaseId: string, hasPassword: boolean, name: string, isOwner: boolean, round?: { __typename?: 'Round', id: string, databaseId: string } | null, users: Array<{ __typename?: 'User_ScoreBoardRoom', role: ScoreBoardRoomRole, userData: { __typename?: 'UserData', name: string, id: string, iconUrl?: string | null, userId: string, databaseId: string } }> } | null };
 
 export type GetScoreBoardRoomHasPasswordQueryVariables = Exact<{
   input: GetScoreBoardRoomInput;
@@ -505,6 +538,10 @@ export const GetScoreBoardRoomDataDocument = gql`
     databaseId
     hasPassword
     name
+    round {
+      id
+      databaseId
+    }
     users {
       role
       userData {
@@ -515,6 +552,7 @@ export const GetScoreBoardRoomDataDocument = gql`
         databaseId
       }
     }
+    isOwner
   }
 }
     `;
