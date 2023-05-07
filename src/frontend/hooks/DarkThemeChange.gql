@@ -1,0 +1,7 @@
+mutation SwitchDarkTheme($input: SwitchDarkThemeInput) {
+  switchDarkTheme(input: $input) {
+    id
+    databaseId
+    isDarkTheme
+  }
+}

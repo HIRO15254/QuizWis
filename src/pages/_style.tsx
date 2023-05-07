@@ -14,7 +14,7 @@ const StyleProvider = (props: StyleProviderProps) => {
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        colorScheme: session?.userData?.isDarkTheme ? 'dark' : 'light',
+        colorScheme: session?.isDarkTheme ? 'dark' : 'light',
       }}
     >
       <Global

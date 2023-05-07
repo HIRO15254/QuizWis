@@ -1,4 +1,4 @@
-import 'src/styles/globals.css';
+import '../frontend/styles/globals.css';
 import { ApolloProvider } from '@apollo/client';
 import { Notifications } from '@mantine/notifications';
 import Head from 'next/head';
@@ -6,8 +6,8 @@ import { SessionProvider } from 'next-auth/react';
 import React from 'react';
 
 import StyleProvider from './_style';
-import Page from '../components/layouts/views/Page';
-import apolloClient from '../lib/apollo';
+import Page from '../frontend/components/layouts/views/Page';
+import apolloClient from '../frontend/lib/apollo';
 
 import type { AppProps } from 'next/app';
 
