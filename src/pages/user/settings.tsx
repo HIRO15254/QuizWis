@@ -2,15 +2,15 @@ import { Group, Paper, Tabs } from '@mantine/core';
 import { PageFC } from 'next';
 import React from 'react';
 
-import BasicUserSettingForm from '../../features/user/components/BasicUserSettingForm';
-import IconUploader from '../../features/user/components/IconUploader';
+import BasicUserSettingForm from '../../features/user/components/views/BasicUserSettingForm';
+import IconUploadForm from '../../features/user/components/views/IconUploadForm';
 
 /**
  * ログインページ
  */
 const MyPage: PageFC = () => (
   <Group position="center">
-    <Paper p="md" maw={600} w="80%">
+    <Paper p="md" maw={600} w="100%">
       <Tabs defaultValue="basic">
         <Tabs.List>
           <Tabs.Tab value="basic">基本設定</Tabs.Tab>
@@ -22,7 +22,7 @@ const MyPage: PageFC = () => (
         </Tabs.Panel>
 
         <Tabs.Panel value="icon" pt="xs">
-          <IconUploader />
+          <IconUploadForm />
         </Tabs.Panel>
       </Tabs>
     </Paper>

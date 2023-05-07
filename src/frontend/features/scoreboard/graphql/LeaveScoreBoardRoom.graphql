@@ -1,0 +1,6 @@
+mutation LeaveScoreBoardRoom($input: LeaveScoreBoardRoomInput!) {
+  leaveScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}

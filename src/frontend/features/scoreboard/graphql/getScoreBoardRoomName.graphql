@@ -1,0 +1,7 @@
+query GetScoreBoardRoomName($input: GetScoreBoardRoomInput!) {
+  getScoreBoardRoom(input: $input) {
+    id
+    databaseId
+    name
+  }
+}

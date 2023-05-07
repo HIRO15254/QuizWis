@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 
-import { AccessControlType } from '../hooks/useAccessControl';
+import { AccessControlType } from '../frontend/hooks/useAccessControl';
 
 declare module 'next' {
   export type PageProps = {

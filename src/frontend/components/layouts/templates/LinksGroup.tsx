@@ -1,0 +1,115 @@
+import {
+  Group,
+  Box,
+  Collapse,
+  ThemeIcon,
+  Text,
+  UnstyledButton,
+  createStyles,
+  rem,
+} from '@mantine/core';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import Router from 'next/router';
+import React, { useState } from 'react';
+
+const useStyles = createStyles((theme) => ({
+  control: {
+    fontWeight: 500,
+    display: 'block',
+    width: '100%',
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+    fontSize: theme.fontSizes.sm,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
+      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    },
+  },
+
+  link: {
+    fontWeight: 500,
+    display: 'block',
+    textDecoration: 'none',
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    paddingLeft: rem(31),
+    marginLeft: rem(30),
+    fontSize: theme.fontSizes.sm,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    borderLeft: `${rem(1)} solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+    }`,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
+      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    },
+  },
+
+  chevron: {
+    transition: 'transform 200ms ease',
+  },
+}));
+
+interface LinksGroupProps {
+  icon: React.FC<{ size: string }>;
+  label: string;
+  initiallyOpened?: boolean;
+  links?: { label: string; link: string }[];
+  link?: string;
+}
+
+const LinksGroup = ({
+  icon: Icon, label, initiallyOpened, links, link,
+}: LinksGroupProps) => {
+  const { classes, theme } = useStyles();
+  const hasLinks = Array.isArray(links);
+  const [opened, setOpened] = useState(initiallyOpened || false);
+  const ChevronIcon = theme.dir === 'ltr' ? IconChevronRight : IconChevronLeft;
+  const items = (hasLinks ? links : []).map((mappedLink) => (
+    <Text<'a'>
+      component="a"
+      className={classes.link}
+      href={mappedLink.link}
+      key={mappedLink.label}
+    >
+      {mappedLink.label}
+    </Text>
+  ));
+
+  const onClick = () => {
+    if (hasLinks) {
+      setOpened((o) => !o);
+    } else {
+      Router.push(link ?? '/');
+    }
+  };
+
+  return (
+    <>
+      <UnstyledButton onClick={onClick} className={classes.control}>
+        <Group position="apart" spacing={0}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <ThemeIcon variant="light" size={30}>
+              <Icon size="1.1rem" />
+            </ThemeIcon>
+            <Box ml="md">{label}</Box>
+          </Box>
+          {hasLinks && (
+            <ChevronIcon
+              className={classes.chevron}
+              size="1rem"
+              stroke={1.5}
+              style={{
+                transform: opened ? 'rotate(90deg)' : 'none',
+              }}
+            />
+          )}
+        </Group>
+      </UnstyledButton>
+      {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
+    </>
+  );
+};
+
+export default LinksGroup;

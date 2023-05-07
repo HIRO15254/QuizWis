@@ -1,15 +1,11 @@
-import { DefaultSession } from 'next-auth';
+import 'next-auth';
 
 declare module 'next-auth' {
   interface Session {
-    user: {
-      userDataLinked: boolean;
-      id: string;
-    } & DefaultSession['user'];
-    userData: {
-      userId: string;
-      iconUrl?: string;
-      name: string;
-    }
+    userId: string;
+    databaseId: string;
+    iconUrl?: string;
+    name: string;
+    isDarkTheme: boolean;
   }
 }

@@ -1,9 +1,15 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import NextAuth, { AuthOptions } from 'next-auth';
+import NextAuth, { AuthOptions, Session } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
-import { prisma } from '../../../lib/prisma';
+import prisma from '../../../backend/lib/prisma';
+
+const createUserID = () => {
+  const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const length = 8;
+  return [...Array(length)].map(() => c[Math.floor(Math.random() * c.length)]).join('');
+};
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -18,28 +24,49 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: 'database',
+    strategy: 'jwt',
     maxAge: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // 24 hours
   },
   callbacks: {
-    async session({ session, token: _token, user }) {
-      const userValue = await prisma.user.findUnique({ where: { id: user.id } });
-      const userDataValue = await prisma.userData.findUnique(
-        { where: { databaseId: userValue?.userDataId || '' } },
-      );
+    async session({ session }) {
+      const userValue = await prisma.user.findUnique({
+        where: {
+          email: session.user?.email ?? '',
+        },
+      });
+      const userDataValue = await prisma.userData.findUnique({
+        where: {
+          databaseId: userValue?.userDataId || '',
+        },
+      });
       // NOTE: ここでのパラメーター再割り当ては許容してほしい
       // eslint-disable-next-line no-param-reassign
-      session.user.userDataLinked = !!userValue?.userDataId;
-      // eslint-disable-next-line no-param-reassign
-      session.user.id = userValue?.id ?? '';
-      // eslint-disable-next-line no-param-reassign
-      session.userData = {
+      const newSession: Session = {
         userId: userDataValue?.userId ?? '',
         name: userDataValue?.name ?? '',
         iconUrl: userDataValue?.iconUrl ?? undefined,
+        isDarkTheme: userDataValue?.isDarkTheme ?? false,
+        databaseId: userDataValue?.databaseId ?? '',
+        expires: session.expires,
       };
-      return session;
+      return newSession;
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      const userId = createUserID();
+      await prisma.userData.create({
+        data: {
+          userId,
+          name: user.name ?? `user_${userId}`,
+          authUser: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
     },
   },
   useSecureCookies: process.env.NODE_ENV === 'production',

@@ -1,0 +1,6 @@
+mutation DeleteScoreBoardRoom($input: DeleteScoreBoardRoomInput!) {
+  deleteScoreBoardRoom(input: $input) {
+    id
+    databaseId
+  }
+}
