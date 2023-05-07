@@ -5,8 +5,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator nexusPrisma {
-  provider = "nexus-prisma"
+generator pothos {
+  provider = "prisma-pothos-types"
 }
 
 datasource db {
@@ -34,15 +34,6 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-/// 認証時に使用されるセッション情報
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 /// 各ユーザーの情報
 model User {
   id            String    @id @default(cuid())
@@ -51,7 +42,6 @@ model User {
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  sessions      Session[]
 
   userData   UserData? @relation(fields: [userDataId], references: [databaseId])
   userDataId String?   @unique
@@ -99,20 +89,20 @@ model UserData {
 
   //* 得点表示用データ
   /// 参加中のルーム情報
-  scoreBoardRooms       User_ScoreBoardRoom[]
+  rooms                 User_Room[]
   /// 参加中のラウンド情報
   rounds                User_Round?
   /// 参加中のラウンドのアクション
-  RoundActions          RoundAction[]         @relation("actionUser")
-  TargettedRoundActions RoundAction[]         @relation("targetUser")
+  RoundActions          RoundAction[] @relation("actionUser")
+  TargettedRoundActions RoundAction[] @relation("targetUser")
 
   @@index([userId], type: Hash)
   @@index([name], type: Hash)
 }
 
 //* 得点表示用データ(リアルタイム更新)
-/// 現在開かれている得点表示ルームのデータ
-model ScoreBoardRoom {
+/// 現在開かれている得点表示のデータ
+model Room {
   //* メタデータ
   /// データベース上のID
   databaseId String   @id @default(cuid()) @map("id")
@@ -127,31 +117,31 @@ model ScoreBoardRoom {
   /// 参加に必要なパスワード
   hashedPassword String?
   /// 参加中のユーザー(との中間テーブル)
-  users          User_ScoreBoardRoom[]
+  users          User_Room[]
   /// 現在行われているラウンド
   round          Round?
 }
 
 /// ユーザーと得点表示ルームの中間テーブル
-model User_ScoreBoardRoom {
+model User_Room {
   //* メタデータ
   // データベース上のID
   databaseId String @id @default(cuid()) @map("id")
 
   //* 接続情報
-  userData         UserData       @relation(fields: [userDataId], references: [databaseId])
-  userDataId       String
-  scoreBoardRoom   ScoreBoardRoom @relation(fields: [scoreBoardRoomId], references: [databaseId], onDelete: Cascade)
-  scoreBoardRoomId String
+  userData   UserData @relation(fields: [userDataId], references: [databaseId])
+  userDataId String
+  room       Room     @relation(fields: [roomId], references: [databaseId], onDelete: Cascade)
+  roomId     String
 
   //* 付加情報
   /// ユーザーの得点表示ルーム内での権限
-  role ScoreBoardRoomRole @default(MEMBER)
+  role RoomRole @default(MEMBER)
 
-  @@unique([userDataId, scoreBoardRoomId])
+  @@unique([userDataId, roomId])
 }
 
-enum ScoreBoardRoomRole {
+enum RoomRole {
   OWNER
   MEMBER
 }
@@ -168,10 +158,11 @@ model Round {
 
   //* 親情報
   /// このラウンドが行われているルーム
-  scoreBoardRoom   ScoreBoardRoom @relation(fields: [scoreBoardRoomId], references: [databaseId])
-  scoreBoardRoomId String         @unique
+  room   Room   @relation(fields: [roomId], references: [databaseId])
+  roomId String @unique
 
   //* ラウンド情報データ
+  name    String?
   /// 行われているルール
   rule    Rule          @relation(fields: [ruleId], references: [databaseId])
   ruleId  String
@@ -207,7 +198,7 @@ model User_Round {
 }
 
 enum RoundRole {
-  PRAYER
+  PLAYER
   ADMIN
 }
 
@@ -273,15 +264,15 @@ model Rule {
 
   //* ルール情報
   /// ルールの名前
-  name     String?
+  name          String?
   /// ルールの種別
-  ruleType RuleType
+  ruleType      RuleType
   /// 限定問題数
-  questionLimit    Int?
+  questionLimit Int?
   /// 制限時間
   timeLimit     DateTime?
   /// ルール上のパラメータ
-  params   Int[]
+  params        Int[]
 
   //* 他データ構造用参照
   usedRounds Round[]

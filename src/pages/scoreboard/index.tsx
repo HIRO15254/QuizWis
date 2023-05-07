@@ -1,7 +1,7 @@
 import { PageFC } from 'next';
 import React from 'react';
 
-import ScoreBoardRoomListView from '../../features/scoreboard/components/views/ScoreBoardRoomListView';
+import ScoreBoardRoomListView from '../../frontend/features/scoreboard/components/views/ScoreBoardRoomListView';
 
 /**
  * 得点表示ページ

@@ -7,8 +7,8 @@ import { PageFC } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import DiscordLoginButton from '../../features/auth/components/DiscordLoginButton';
-import GoogleLoginButton from '../../features/auth/components/GoogleLoginButton';
+import DiscordLoginButton from '../../frontend/features/auth/components/DiscordLoginButton';
+import GoogleLoginButton from '../../frontend/features/auth/components/GoogleLoginButton';
 
 /**
  * ログインページ
